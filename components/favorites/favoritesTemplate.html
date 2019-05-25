@@ -1,0 +1,17 @@
+<h2 class='heading marginAdded'>My Favorites</h2>
+<div>
+  <div ng-repeat="photo in photos" class='photoGallery'>
+    <img ng-click="toggleModal(photo._id)" class='detailImage' ng-src="../../images/{{photo.file_name}}"></img>
+    <button ng-click='removeFromFavorites(photo._id, currentUser)' class='removeBtn'>
+      Remove favorite
+      <i class='fa fa-trash'></i>
+    </button>
+  </div>
+  <div ng-repeat='photo in photos'>
+    <div class='dialogOfPictures' id="{{photo._id}}" title="Favorite Photo">
+      <img class='enlargedThumbnail' ng-src="../../images/{{photo.file_name}}"></img><br></br>
+      <p id='p_{{photo._id}}'>{{photo.formattedTime}}</p>
+    </div>
+  </div>
+  <h3 ng-if='photos.length === 0' class='heading marginAdded'>No favorites</h3>
+</div>

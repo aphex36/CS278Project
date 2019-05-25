@@ -1,0 +1,47 @@
+<h2 ng-cloak class='heading marginAdded'>{{specificUser.first_name}} {{specificUser.last_name}}'s Photos</h2>
+<h3 ng-cloak ng-if='userPhotos.allPhotos.length == 0' class='heading marginAdded'>No photos</h3>
+<div ng-if='userPhotos.allPhotos && user.allPhotos.length != 0'>
+  <div class='marginAdded singlePhoto' ng-repeat='photo in userPhotos.allPhotos'>
+    <br></br>
+    <img ng-src='../../images/{{photo.file_name}}'></img><br></br>
+    <span class='timePadding'>Posted on {{photo.formattedTime}}</span>
+    <br></br>
+    <button ng-click="deletePhoto(photo.id)" ng-if='photo.user_id === currentUser'>
+      <i class='fa fa-trash'></i>
+      <label>Remove photo</label>
+    </button><br></br>
+    <button ng-click="addToFavorite(photo)" ng-if='!photo.favorite'>
+      <i class='fa fa-star'></i>
+      <label>Add to your favorites</label>
+    </button>
+    <button ng-click="removeFromFavorites(photo)" ng-if='photo.favorite'>
+      <i class='fa fa-times'></i>
+      <label>Remove from favorites</label>
+    </button><br></br>
+    <div ng-if="photo.comments && photo.comments.length !== 0" class='commentContainer'>
+      <div class='comment' ng-repeat='comment in photo.comments'>
+        <b><a href='#/users/{{comment.user.commenter_id}}'>{{comment.user.first_name}} {{comment.user.last_name}}</a></b>
+        <br></br>
+        <span>{{comment.comment}}</span>
+        <br></br>
+        <span>{{comment.formattedTime}}</span><br></br>
+        <button ng-click="deleteSpecificComment(comment._id, photo._id)" ng-if='comment.user.commenter_id === currentUser'>
+          <i class='fa fa-trash'></i>
+          <label>Remove comment</label>
+        </button>
+      </div>
+    </div>
+    <div ng-if="!photo.comments || photo.comments.length === 0">
+      <h3>No Comments!</h3>
+    </div>
+    <br></br>
+    <form>
+      <div class='errorMessageColor'>{{message.commentErrorMessage}}</div>
+      <textarea class='photoCommentArea' id='comment_info_{{photo._id}}' ng-model='something'>
+      </textarea>
+      <br></br>
+      <input ng-click="addToPhoto(photo._id)" type='submit'></input><br></br>
+    </form>
+  </div>
+</div>
+<br></br>

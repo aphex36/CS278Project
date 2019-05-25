@@ -1,0 +1,35 @@
+<h2 class='heading'>Login To Lamebook!</h2>
+<form name="login_form" class='formatForm' ng-submit="submitLogin(login_form)" class="css-form">
+   <label>Username: </label>
+   <input class='loginTextBox' type="text" name="userName" ng-model="user_name" required/>
+   <br></br>
+   <label>Password: </label>
+   <input class='loginTextBox' type="password" name="passwordGiven" ng-model="password" required
+   /><br></br>
+   <label class='errorMessageColor'>{{loginErrorMessage}}</label>
+   <br></br>
+   <input type="submit" value="Submit"/>
+</form>
+<br></br>
+<h2 class='heading'>Register Lamebook!</h2>
+<form name="register_form" class='formatForm' ng-submit="submitRegister(register_form)" class="css-form">
+   <label class='errorMessageColor'>{{errorMessage}}</label><br>
+   <label>Username: </label>
+   <input class='loginTextBox' type="text" name="userName" ng-model="user_name_register" required /><br></br>
+   <label>Password: </label>
+   <input class='loginTextBox' type="password" name="passwordGiven" ng-model="password_register" required /><br></br>
+   <label>Repeat password: </label>
+   <input class='loginTextBox' type="password" name="passwordGiven" ng-model="repeatedPassword" required /><br></br>
+   <label>First name: </label>
+   <input class='loginTextBox' type="text" ng-model="firstNameInput" required/><br></br>
+   <label>Last name: </label>
+   <input class='loginTextBox' type="text" ng-model="lastNameInput" required/><br></br>
+   <label>Location: </label>
+   <input class='loginTextBox' type="text" ng-model="locationInput" required /><br></br>
+   <label>Description: </label>
+   <input class='loginTextBox' type="text" ng-model="descriptionInput" required /><br></br>
+   <label>Occupation: </label>
+   <input class='loginTextBox' type="text" ng-model="occupationInput" required /><br></br>
+   <br></br>
+   <input type="submit" value="Register"/>
+</form><br></br>

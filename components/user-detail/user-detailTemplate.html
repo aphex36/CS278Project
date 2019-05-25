@@ -1,0 +1,27 @@
+<div class='profile'>
+  <h2>{{userDetail.user.first_name}} {{userDetail.user.last_name}}</h2>
+  <b>Location: </b> <span>{{userDetail.user.location}}</span>
+  <br></br>
+  <b>Occupation: </b><span>{{userDetail.user.occupation}}</span>
+  <br></br>
+  <b>Description: </b> <span>{{userDetail.user.description}}</span>
+  <br></br>
+  <a href='#/photos/{{userDetail.user.id}}'><b>Photos</b></a><br></br>
+  <div ng-if="mostCommentedPic">
+    <label><b>Most commented picture</b></label><br><img ng-click="redirect(mostCommentedPic._id)" ng-if="mostCommentedPic" class='detailImage' ng-src='../../images/{{mostCommentedPic.file_name}}'></img><br>
+    <label>Number of Comments: {{mostCommentedPic.num_comments}}</label>
+    <br></br>
+  </div>
+  <div ng-if="!mostCommentedPic">
+    <label><b>Most commented picture</b></label><label>: No pictures so far</label>
+  </div>
+  <div ng-if="mostRecentPic">
+    <label><b>Most recent picture</b></label><br><img ng-click="redirect(mostRecentPic._id)" ng-if="mostRecentPic" class='detailImage' ng-src='../../images/{{mostRecentPic.file_name}}'></img>
+    <br></br>
+    <label>Posted on {{mostRecentPic.formattedTime}}</label>
+    <br></br>
+  </div>
+  <div ng-if="!mostRecentPic">
+    <label><b>Most recent picture</b></label><label>: No pictures so far</label>
+  </div>
+</div>

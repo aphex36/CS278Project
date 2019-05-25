@@ -1,0 +1,12 @@
+<h2 class='heading marginAdded'>{{userInfo.first_name}} {{userInfo.last_name}}'s Comments</h2>
+<div class='separator'></div>
+<h3 ng-if='comments.length == 0' class='heading marginAdded'>No comments made yet!</h3>
+<div class='commentUserContainer' ng-repeat="comment in comments">
+  <img class='thumbnail' ng-src="../images/{{comment.photoImageURL}}" ng-click="goToSpecificPhoto(comment.byUser, comment.photoID)"></img>
+  <br></br>
+  <a href='#/photos/{{comment.byUser}}/{{comment.photoID}}'>{{comment.comment}}</a><br></br>
+  <button ng-if='canDeleteComments' ng-click="deleteSpecificComment(comment._id)">
+    <i class='fa fa-trash'></i>
+    <label>Remove comment</label>
+  </button>
+</div>

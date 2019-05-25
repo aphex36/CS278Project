@@ -1,0 +1,49 @@
+/*
+CSS for the CS142 project #5 main page
+
+Since CSS uses a global name space for classes we should use class names starting with
+cs142-main- here.
+*/
+
+
+.heading{
+  text-align: center;
+}
+.locationTitle{
+  margin-left: 10px;
+  font-size: 14px;
+}
+.smallSize{
+  font-size: 12px;
+}
+.gravitateRight{
+  float: right;
+}
+.loginSize{
+  font-size: 12px;
+}
+.searchBar{
+  width: 50%;
+  display:inline-block;
+}
+.searchPane{
+  padding-top: 10px;
+  padding-left: 10px;
+}
+.headerPadding{
+  margin-bottom: 0px;
+  margin-top: 0px;
+  margin-left: 10px;
+  padding: 0px;
+  display: inline-block;
+  float: left;
+}
+.versionInfo{
+  float: right;
+  font-size: 14px;
+  margin-right: 20px;
+}
+
+.fullSpace{
+  min-width: 100%;
+}

@@ -1,0 +1,28 @@
+<h2 class='heading marginAdded'>Activity Feed</h2>
+<ul>
+  <button ng-click='reloadActivites()'><i class='fa fa-refresh'></i>Refresh</button><br></br>
+  <li class='listOfActivities' ng-if="activity.type !== 'null'" ng-repeat='activity in activities'>
+    <div>
+      <div ng-if="activity.type === 'login'">
+        <b>{{activity.userInformation[0].first_name}} {{activity.userInformation[0].last_name}} logged in</b>
+      </div>
+      <div ng-if="activity.type === 'logout'">
+        <b>{{activity.userInformation[0].first_name}} {{activity.userInformation[0].last_name}} logged out</b>
+      </div>
+      <div ng-if="activity.type === 'register'">
+        <b>{{activity.userInformation[0].first_name}} {{activity.userInformation[0].last_name}} registered</b>
+      </div>
+      <div ng-if="activity.type === 'photo'">
+        <b>{{activity.userInformation[0].first_name}} {{activity.userInformation[0].last_name}} uploaded this photo</b>
+        <br><img ng-click='goToSpecificPhoto(activity.photoOwner, activity.photoInvolved)' class='thumbnail' ng-src='../../images/{{activity.imageURL}}'></img>
+      </div>
+      <div ng-if="activity.type === 'comment'">
+        <b>{{activity.userInformation[0].first_name}} {{activity.userInformation[0].last_name}} commented on this photo</b>
+        <br><img ng-click='goToSpecificPhoto(activity.photoOwner, activity.photoInvolved)' class='thumbnail' ng-src='../../images/{{activity.imageURL}}'></img>
+      </div>
+      <div style='margin-left: 10px'>
+        {{activity.formattedTime}}
+      </div>
+    </div>
+  </li>
+</ul>

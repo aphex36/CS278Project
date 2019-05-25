@@ -1,0 +1,48 @@
+Story number and name:  1 - Extend user profile detail with usage
+Story points:  3
+Brief description to see the story in action:
+
+On clicking the user detail page (their name’s on the sidebar) you should be directed to their as normal but you should see a Most Commented Picture and a Most Recent Picture attributes on their profile page, with the number of comments and timestamp respectively. Clicking them also routes you to that photo’s page.
+
+——————————————————————————————————————————————————————
+
+Story number and name:  6 - Deleting Comments, Photos, and users
+Story points:  4
+Brief description to see the story in action:
+
+When you come across your comments or comment anything on a photo, you can remove your comment with a “remove comment” button right next to the comment. When you come across one of your photos, you can remove the photo with the “remove photo” button below the picture. Finally, you can delete your account with a button provided in the top right corner, once you are logged in.
+
+——————————————————————————————————————————————————————
+
+Story number and name: 8 - Favorite list of photos for users
+Story points: 6
+Brief description to see the story in action:
+
+When you come across a photo, you will have the option to favorite it to add to your favorites list with a “Add to favorites” button or you will have a button to remove the photo from your favorites labeled “Remove From your favorites” (this is if the photo is already in your favorites list). There is also a separate page to view a gallery of your favorite photos that can be reached with the click of a hyperlink “My favorites” on the side bar.
+
+——————————————————————————————————————————————————————
+
+Story number and name: 5 - Activity Feed
+Story points: 4
+Brief description to see the story in action:
+
+I placed a hyperlink to visit a separate view that shows all the recent activities with timestamps in the sidebar. It will direct you to /feed
+
+
+——————————————————————————————————————————————————————
+
+Story number and name: 2 - Full Text Search of photos by comment text
+Story points: 6
+Brief description to see the story in action:
+
+I added a search bar to search the indexed comments schema (makes it easier for getting only relevant comments), and I return the results in a search page view
+
+================================================================================================================================
+
+Total Story Points: 23
+
+Marketing Video URL (ensure permissions are set to public viewing): https://www.youtube.com/watch?v=hY4yTuLFVuU
+
+Is it OK with you if we post your Marketing Video URL on the class discussion forum? No
+
+Instructions for Grading (should be easy to run app from new machine): Just run mongod, load the database with node loadDatabase.js, and run the web server with node webServer.js, and visit the localhost:3000 page.

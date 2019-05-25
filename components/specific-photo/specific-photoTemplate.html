@@ -1,0 +1,53 @@
+<h2 class='heading marginAdded'>{{specificUser.first_name}} {{specificUser.last_name}}'s Photos</h2>
+<div>
+  <h3 ng-cloak ng-if='user.allPhotos.length == 0' class='heading marginAdded'>No photos</h3>
+  <div class='alignCenter'>
+    <div>
+      <button ng-disabled='disablePrev' ng-click="switchImage('prev')" class='alignAtTop'>&lt;</button>
+      <img ng-src='../../images/{{currentPostImage}}'></img>
+      <button ng-disabled='disableNext' ng-click="switchImage('next')" class='alignAtTop'>&gt;</button>
+    </div>
+    <div>
+      {{userPhotos.allPhotos[0].formattedTime}}
+    </div>
+    <button ng-click="deletePhoto(userPhotos.allPhotos[0].id, userPhotos.allPhotos[0].user_id)" ng-if='userPhotos.allPhotos[0].user_id === currentUser'>
+      <i class='fa fa-trash'></i>
+      <label>Remove photo</label>
+    </button><br></br>
+    <div class='heightOfFavorites'>
+      <button ng-cloak ng-click="addToFavorite(userPhotos.allPhotos[0])" ng-if='!userPhotos.allPhotos[0].favorite'>
+        <i class='fa fa-star'></i>
+        <label>Add to your favorites</label>
+      </button>
+      <button ng-cloak ng-click="removeFromFavorites(userPhotos.allPhotos[0])" ng-if='userPhotos.allPhotos[0].favorite'>
+        <i class='fa fa-times'></i>
+        <label>Remove from favorites</label>
+      </button><br></br>
+    </div>
+  </div>
+  <br>
+  <div ng-cloak ng-if="userPhotos.allPhotos[0].comments && userPhotos.allPhotos[0].comments.length !== 0" class='commentContainer'>
+    <div class='comment' ng-repeat='comment in userPhotos.allPhotos[0].comments'>
+      <b><a href='#/users/{{comment.user.commenter_id}}'>{{comment.user.first_name}} {{comment.user.last_name}}</a></b>
+      <br></br>
+      <span>{{comment.comment}}</span>
+      <br></br>
+      <span>{{comment.formattedTime}}</span><br></br>
+      <button ng-click="deleteSpecificComment(comment._id, userPhotos.allPhotos[0].id)" ng-if='comment.user.commenter_id === currentUser'>
+        <i class='fa fa-trash'></i>
+        <label>Remove comment</label>
+      </button>
+    </div>
+  </div>
+  <div ng-cloak ng-if="!userPhotos.allPhotos[0].comments || userPhotos.allPhotos[0].comments.length === 0">
+    <h2 class='heading'>No Comments!</h2>
+  </div>
+  <br></br>
+  <form class='formatForm'>
+    <div class='errorMessageColor'>{{message.commentErrorMessage}}</div>
+    <textarea ng-cloak id='comment_info_{{userPhotos.allPhotos[0]._id}}' ng-model='something' class='photoCommentArea'>
+    </textarea>
+    <br></br>
+    <input ng-cloak ng-click="addToPhoto(userPhotos.allPhotos[0]._id)" type='submit'></input><br></br>
+  </form>
+</div>

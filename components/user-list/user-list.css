@@ -1,0 +1,54 @@
+.userList{
+  border: 1px solid #dddddd;
+   padding-left: 10px;
+}
+.photoBubble{
+  background-color: green;
+  color: white;
+  padding-left: 3px;
+  padding-right: 3px;
+  border-radius: 5px;
+  margin-top: 5px;
+}
+.dialogOfPictures{
+  visibility: hidden;
+  text-align: center;
+}
+.enlargedThumbnail{
+  height: 300px;
+  width: 500px;
+}
+.bubbleContainer{
+  display: inline-block;
+  float: right;
+}
+
+.errorMessageColor{
+  color: red;
+}
+
+.inlineHeader{
+  display: inline-block;
+}
+.whiteLink{
+  color: white;
+}
+
+.alignLeft{
+  margin-top: 5px;
+  float: left;
+}
+
+.bubbleSeparator{
+  border-bottom: 1px solid #ccc;
+}
+
+
+.commentBubble{
+  background-color: red;
+  color: white;
+  margin-top: 5px;
+  padding-left: 3px;
+  padding-right: 3px;
+  border-radius: 5px;
+}
