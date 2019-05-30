@@ -13,7 +13,8 @@ var recommendationSchema = new mongoose.Schema({
     user_id: mongoose.Schema.Types.ObjectId,
     review: String,
     types: [String],
-    strength: Number
+    strength: Number,
+    restaurant: mongoose.Schema.Types.ObjectId
 });
 
 
