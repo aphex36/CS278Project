@@ -68,7 +68,51 @@ app.get('/', function (request, response) {
  * /test/counts - Return an object with the counts of the different collections in JSON format
  */
 
+//Create an index on the comments for searching later
+Comments.collection.createIndex({"comment": "text"});
+app.get('/search', function(request, response)
+{
+  //Match the comments and find the corresponding photo using a $lookup
+  Comments.aggregate([{$match: {$text: {$search: request.query.q}}}, {$lookup: {from: "photos", localField: "belongsToPhoto", foreignField: "id", as: "joined"}}], function(err, foundPhotos)
+  {
+    if(err)
+    {
+      response.status(400).send(JSON.stringify(err));
+      return;
+    }
+    var copyOfFoundPhotos = JSON.parse(JSON.stringify(foundPhotos));
+    if(foundPhotos.length === 0)
+    {
+      response.end("[]");
+      return;
+    }
 
+    //Get the photo owner's name and the commenter's name in two nested queries
+    for(var i = 0; i < foundPhotos.length; i++)
+    {
+      (function(j)
+      {
+        User.findOne({"id": copyOfFoundPhotos[j].joined[0].user_id}, function(error, matchingPhoto)
+        {
+          User.findOne({"id": copyOfFoundPhotos[j].user_id}, function(userError, matchingUser)
+          {
+              //Call on a counter and return the modification
+              copyOfFoundPhotos[j].full_name_of_commenter = matchingUser.first_name + " " + matchingUser.last_name;
+              copyOfFoundPhotos[j].full_name_of_uploader = matchingPhoto.first_name + " " + matchingPhoto.last_name;
+              if(j === foundPhotos.length - 1)
+              {
+                response.end(JSON.stringify(copyOfFoundPhotos));
+              }
+          });
+        });
+      })(i);
+    }
+  });
+});
+
+app.get('/test/:p1', function (request, response) {
+    // Express parses the ":p1" from the URL and returns it in the request.params objects.
+    console.log('/test called with param1 = ', request.params.p1);
 
 /*
  * URL /user/list - Return all the User object.

@@ -30,8 +30,8 @@ cs142App.config(['$routeProvider',
               controller: 'SearchController'
             }).
             when('/front_page', {
-              templateUrl: 'components/user-start/user-starting.html',
-              controller: 'FrontPageController'
+              templateUrl: 'components/map/map.html',
+              controller: 'mapController'
             }).
             when('/login-register', {
               templateUrl: 'components/login/login-view.html',
@@ -82,6 +82,7 @@ cs142App.controller('MainController', ['$scope', '$http', '$location', '$rootSco
             $scope.showCheckBox = "true";
           });
         };
+
         $scope.logoutUser = function(keepFromHistory)
         {
           if(keepFromHistory)

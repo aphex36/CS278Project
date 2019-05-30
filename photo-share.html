@@ -21,7 +21,8 @@
         <script src="components/user-detail/user-detailController.js"></script>
         <link rel="stylesheet" type="text/css" href="components/user-detail/user-detail.css" />
         <script src="components/search/SearchController.js"></script>
-
+        <link rel="stylesheet" type="text/css" href="components/map/map.css" />
+        <script src="components/map/mapController.js"></script>
         <script src="components/user-photos/user-photosController.js"></script>
         <link rel="stylesheet" type="text/css" href="components/user-photos/user-photos.css" />
 
@@ -43,7 +44,7 @@
         <md-toolbar layout = "row">
           <div class='fullSpace'>
             <div class='fullSpace'>
-              <h3 class='headerPadding'>Lamebook</h3>
+              <h3 class='headerPadding'>Food App</h3>
               <span class='versionInfo'> Version: {{info.version}}<br>
                 <button ng-if="userIsLoggedIn" ng-click="logoutUser()">Logout</button><br>
                 <button ng-if="userIsLoggedIn" ng-click="deleteAccount()">Delete Account</button><br>
