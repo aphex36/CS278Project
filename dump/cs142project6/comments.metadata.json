@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":2,"key":{"_id":1},"name":"_id_","ns":"cs142project6.comments"},{"v":2,"key":{"_fts":"text","_ftsx":1},"name":"comment_text","ns":"cs142project6.comments","weights":{"comment":1},"default_language":"english","language_override":"language","textIndexVersion":3}],"uuid":"c3729712a90441df85fce236e99237a2"}

@@ -4,8 +4,10 @@
  * Module dependencies.
  */
 
-var Document = require('../document_provider')();
-var PromiseProvider = require('../promise_provider');
+const Document = require('../document_provider')();
+const EventEmitter = require('events').EventEmitter;
+var internalToObjectOptions = require('../options').internalToObjectOptions;
+const utils = require('../utils');
 
 /**
  * EmbeddedDocument constructor.
@@ -33,6 +35,10 @@ function EmbeddedDocument(obj, parentArr, skipId, fields, index) {
   this.on('isNew', function(val) {
     _this.isNew = val;
   });
+
+  _this.on('save', function() {
+    _this.constructor.emit('save', _this);
+  });
 }
 
 /*!
@@ -40,6 +46,14 @@ function EmbeddedDocument(obj, parentArr, skipId, fields, index) {
  */
 EmbeddedDocument.prototype = Object.create(Document.prototype);
 EmbeddedDocument.prototype.constructor = EmbeddedDocument;
+
+for (var i in EventEmitter.prototype) {
+  EmbeddedDocument[i] = EventEmitter.prototype[i];
+}
+
+EmbeddedDocument.prototype.toBSON = function() {
+  return this.toObject(internalToObjectOptions);
+};
 
 /**
  * Marks the embedded doc modified.
@@ -71,6 +85,16 @@ EmbeddedDocument.prototype.markModified = function(path) {
   }
 };
 
+/*!
+ * ignore
+ */
+
+EmbeddedDocument.prototype.populate = function() {
+  throw new Error('Mongoose does not support calling populate() on nested ' +
+    'docs. Instead of `doc.arr[0].populate("path")`, use ' +
+    '`doc.populate("arr.0.path")`');
+};
+
 /**
  * Used as a stub for [hooks.js](https://github.com/bnoguchi/hooks-js/tree/31ec571cef0332e21121ee7157e0cf9728572cc3)
  *
@@ -84,11 +108,25 @@ EmbeddedDocument.prototype.markModified = function(path) {
  */
 
 EmbeddedDocument.prototype.save = function(fn) {
-  var Promise = PromiseProvider.get();
-  return new Promise.ES6(function(resolve) {
-    fn && fn();
-    resolve();
+  return utils.promiseOrCallback(fn, cb => {
+    this.$__save(cb);
   });
+};
+
+/**
+ * Used as a stub for middleware
+ *
+ * ####NOTE:
+ *
+ * _This is a no-op. Does not actually save the doc to the db._
+ *
+ * @param {Function} [fn]
+ * @method $__save
+ * @api private
+ */
+
+EmbeddedDocument.prototype.$__save = function(fn) {
+  return setImmediate(() => fn(null, this));
 };
 
 /*!
@@ -106,6 +144,7 @@ function registerRemoveListener(sub) {
     owner.removeListener('save', emitRemove);
     owner.removeListener('remove', emitRemove);
     sub.emit('remove', sub);
+    sub.constructor.emit('remove', sub);
     owner = sub = null;
   }
 
@@ -113,15 +152,29 @@ function registerRemoveListener(sub) {
   owner.on('remove', emitRemove);
 }
 
+/*!
+ * no-op for hooks
+ */
+
+EmbeddedDocument.prototype.$__remove = function(cb) {
+  return cb(null, this);
+};
+
 /**
  * Removes the subdocument from its parent array.
  *
+ * @param {Object} [options]
  * @param {Function} [fn]
  * @api public
  */
 
-EmbeddedDocument.prototype.remove = function(fn) {
-  if (!this.__parentArray) {
+EmbeddedDocument.prototype.remove = function(options, fn) {
+  if ( typeof options === 'function' && !fn ) {
+    fn = options;
+    options = undefined;
+  }
+  if (!this.__parentArray || (options && options.noop)) {
+    fn && fn(null);
     return this;
   }
 
@@ -160,7 +213,11 @@ EmbeddedDocument.prototype.update = function() {
  */
 
 EmbeddedDocument.prototype.inspect = function() {
-  return this.toObject();
+  return this.toObject({
+    transform: false,
+    virtuals: false,
+    flattenDecimals: false
+  });
 };
 
 /**
@@ -174,8 +231,11 @@ EmbeddedDocument.prototype.inspect = function() {
 
 EmbeddedDocument.prototype.invalidate = function(path, err, val, first) {
   if (!this.__parent) {
-    var msg = 'Unable to invalidate a subdocument that has not been added to an array.';
-    throw new Error(msg);
+    Document.prototype.invalidate.call(this, path, err, val);
+    if (err.$isValidatorError) {
+      return true;
+    }
+    throw err;
   }
 
   var index = this.__index;
@@ -225,7 +285,7 @@ EmbeddedDocument.prototype.$markValid = function(path) {
 
 EmbeddedDocument.prototype.$isValid = function(path) {
   var index = this.__index;
-  if (typeof index !== 'undefined') {
+  if (typeof index !== 'undefined' && this.__parent) {
     return !this.__parent.$__.validationError ||
       !this.__parent.$__.validationError.errors[this.$__fullPath(path)];
   }
@@ -249,8 +309,8 @@ EmbeddedDocument.prototype.ownerDocument = function() {
     return this;
   }
 
-  while (parent.__parent) {
-    parent = parent.__parent;
+  while (parent.__parent || parent.$parent) {
+    parent = parent.__parent || parent.$parent;
   }
 
   this.$__.ownerDocument = parent;
@@ -275,9 +335,13 @@ EmbeddedDocument.prototype.$__fullPath = function(path) {
     }
 
     var paths = [];
-    while (parent.__parent) {
-      paths.unshift(parent.__parentArray._path);
-      parent = parent.__parent;
+    while (parent.__parent || parent.$parent) {
+      if (parent.__parent) {
+        paths.unshift(parent.__parentArray._path);
+      } else {
+        paths.unshift(parent.$basePath);
+      }
+      parent = parent.__parent || parent.$parent;
     }
 
     this.$__.fullPath = paths.join('.');
@@ -289,8 +353,8 @@ EmbeddedDocument.prototype.$__fullPath = function(path) {
   }
 
   return path
-      ? this.$__.fullPath + '.' + path
-      : this.$__.fullPath;
+    ? this.$__.fullPath + '.' + path
+    : this.$__.fullPath;
 };
 
 /**

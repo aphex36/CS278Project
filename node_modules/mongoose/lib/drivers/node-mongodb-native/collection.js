@@ -2,9 +2,9 @@
  * Module dependencies.
  */
 
-var MongooseCollection = require('../../collection'),
-    Collection = require('mongodb').Collection,
-    utils = require('../../utils');
+var MongooseCollection = require('../../collection');
+var Collection = require('mongodb').Collection;
+var utils = require('../../utils');
 
 /**
  * A [node-mongodb-native](https://github.com/mongodb/node-mongodb-native) collection implementation.
@@ -40,7 +40,8 @@ NativeCollection.prototype.onOpen = function() {
 
   if (!_this.opts.capped.size) {
     // non-capped
-    return _this.conn.db.collection(_this.name, callback);
+    callback(null, _this.conn.db.collection(_this.name));
+    return _this.collection;
   }
 
   // capped
@@ -92,9 +93,15 @@ NativeCollection.prototype.onOpen = function() {
  * @api private
  */
 
-NativeCollection.prototype.onClose = function() {
-  MongooseCollection.prototype.onClose.call(this);
+NativeCollection.prototype.onClose = function(force) {
+  MongooseCollection.prototype.onClose.call(this, force);
 };
+
+/*!
+ * ignore
+ */
+
+const syncCollectionMethods = { watch: true };
 
 /*!
  * Copy the collection methods and make them subject to queues
@@ -102,20 +109,27 @@ NativeCollection.prototype.onClose = function() {
 
 function iter(i) {
   NativeCollection.prototype[i] = function() {
+    // If user force closed, queueing will hang forever. See #5664
+    if (this.opts.$wasForceClosed) {
+      return this.conn.db.collection(this.name)[i].apply(collection, args);
+    }
     if (this.buffer) {
+      if (syncCollectionMethods[i]) {
+        throw new Error('Collection method ' + i + ' is synchronous');
+      }
       this.addQueue(i, arguments);
       return;
     }
 
-    var collection = this.collection,
-        args = arguments,
-        _this = this,
-        debug = _this.conn.base.options.debug;
+    var collection = this.collection;
+    var args = arguments;
+    var _this = this;
+    var debug = _this.conn.base.options.debug;
 
     if (debug) {
       if (typeof debug === 'function') {
-        debug.apply(debug
-            , [_this.name, i].concat(utils.args(args, 0, args.length - 1)));
+        debug.apply(_this,
+          [_this.name, i].concat(utils.args(args, 0, args.length - 1)));
       } else {
         this.$print(_this.name, i, args);
       }
@@ -158,14 +172,17 @@ for (var i in Collection.prototype) {
  */
 
 NativeCollection.prototype.$print = function(name, i, args) {
-  console.error(
-      '\x1B[0;36mMongoose:\x1B[0m %s.%s(%s) %s %s %s',
-      name,
-      i,
-      this.$format(args[0]),
-      this.$format(args[1]),
-      this.$format(args[2]),
-      this.$format(args[3]));
+  var moduleName = '\x1B[0;36mMongoose:\x1B[0m ';
+  var functionCall = [name, i].join('.');
+  var _args = [];
+  for (var j = args.length - 1; j >= 0; --j) {
+    if (this.$format(args[j]) || _args.length) {
+      _args.unshift(this.$format(args[j]));
+    }
+  }
+  var params = '(' + _args.join(', ') + ')';
+
+  console.error(moduleName + functionCall + params);
 };
 
 /**
@@ -197,12 +214,15 @@ function formatDate(x, key) {
   x[key] = {inspect: function() { return representation; }};
 }
 function format(obj, sub) {
-  var x = utils.clone(obj, {retainKeyOrder: 1});
+  if (obj && typeof obj.toBSON === 'function') {
+    obj = obj.toBSON();
+  }
+  var x = utils.clone(obj, {transform: false});
   var representation;
 
   if (x != null) {
     if (x.constructor.name === 'Binary') {
-      x = '[object Buffer]';
+      x = 'BinData(' + x.sub_type + ', "' + x.toString('base64') + '")';
     } else if (x.constructor.name === 'ObjectID') {
       representation = 'ObjectId("' + x.toHexString() + '")';
       x = {inspect: function() { return representation; }};
@@ -216,8 +236,12 @@ function format(obj, sub) {
       for (var i = 0; i < numKeys; ++i) {
         key = keys[i];
         if (x[key]) {
+          if (typeof x[key].toBSON === 'function') {
+            x[key] = x[key].toBSON();
+          }
           if (x[key].constructor.name === 'Binary') {
-            x[key] = '[object Buffer]';
+            x[key] = 'BinData(' + x[key].sub_type + ', "' +
+              x[key].buffer.toString('base64') + '")';
           } else if (x[key].constructor.name === 'Object') {
             x[key] = format(x[key], true);
           } else if (x[key].constructor.name === 'ObjectID') {
@@ -234,9 +258,9 @@ function format(obj, sub) {
   }
 
   return require('util')
-  .inspect(x, false, 10, true)
-  .replace(/\n/g, '')
-  .replace(/\s{2,}/g, ' ');
+    .inspect(x, false, 10, true)
+    .replace(/\n/g, '')
+    .replace(/\s{2,}/g, ' ');
 }
 
 /**

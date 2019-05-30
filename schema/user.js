@@ -12,12 +12,11 @@ var userSchema = new mongoose.Schema({
     id: String,     // Unique ID identifying this user
     first_name: String, // First name of the user.
     last_name: String,  // Last name of the user.
-    location: String,    // Location  of the user.
-    description: String,  // A brief user description
-    occupation: String,    // Occupation of the user.
     login_name: String,
-    password_digest: String,
-    salt: String
+    password: String,
+    specialties: [String],
+    followers: [String],
+    following: [String]
 });
 
 

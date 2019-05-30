@@ -25,8 +25,8 @@ function Collection(name, conn, opts) {
   }
 
   opts.bufferCommands = undefined === opts.bufferCommands
-      ? true
-      : opts.bufferCommands;
+    ? true
+    : opts.bufferCommands;
 
   if (typeof opts.capped === 'number') {
     opts.capped = {size: opts.capped};
@@ -80,7 +80,10 @@ Collection.prototype.conn;
 
 Collection.prototype.onOpen = function() {
   this.buffer = false;
-  this.doQueue();
+  var _this = this;
+  setImmediate(function() {
+    _this.doQueue();
+  });
 };
 
 /**
@@ -89,8 +92,8 @@ Collection.prototype.onOpen = function() {
  * @api private
  */
 
-Collection.prototype.onClose = function() {
-  if (this.opts.bufferCommands) {
+Collection.prototype.onClose = function(force) {
+  if (this.opts.bufferCommands && !force) {
     this.buffer = true;
   }
 };
@@ -117,7 +120,11 @@ Collection.prototype.addQueue = function(name, args) {
 
 Collection.prototype.doQueue = function() {
   for (var i = 0, l = this.queue.length; i < l; i++) {
-    this[this.queue[i][0]].apply(this, this.queue[i][1]);
+    if (typeof this.queue[i][0] === 'function') {
+      this.queue[i][0].apply(this, this.queue[i][1]);
+    } else {
+      this[this.queue[i][0]].apply(this, this.queue[i][1]);
+    }
   }
   this.queue = [];
   var _this = this;
@@ -132,6 +139,14 @@ Collection.prototype.doQueue = function() {
  */
 
 Collection.prototype.ensureIndex = function() {
+  throw new Error('Collection#ensureIndex unimplemented by driver');
+};
+
+/**
+ * Abstract method that drivers must implement.
+ */
+
+Collection.prototype.createIndex = function() {
   throw new Error('Collection#ensureIndex unimplemented by driver');
 };
 
@@ -197,6 +212,14 @@ Collection.prototype.getIndexes = function() {
 
 Collection.prototype.mapReduce = function() {
   throw new Error('Collection#mapReduce unimplemented by driver');
+};
+
+/**
+ * Abstract method that drivers must implement.
+ */
+
+Collection.prototype.watch = function() {
+  throw new Error('Collection#watch unimplemented by driver');
 };
 
 /*!
