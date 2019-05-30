@@ -113,6 +113,7 @@ app.get('/search', function(request, response)
     }
   });
 });
+
 app.get('/test/:p1', function (request, response) {
     // Express parses the ":p1" from the URL and returns it in the request.params objects.
     console.log('/test called with param1 = ', request.params.p1);
