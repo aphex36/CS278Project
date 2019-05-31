@@ -46,7 +46,9 @@ var session = require('express-session');
 var bodyParser = require('body-parser');
 var multer = require('multer');
 var fs = require('fs');
-var cs142password = require('./cs142password.js');
+const yelp = require('yelp-fusion');
+const client = yelp.client('FcGWwwL2vqkvQvJJSZoWulgmCZiMcLP0DWU9TUhhdCpq4YOI8rBjCBN6RP06UKbSlN4tLs_n_I9hgwLDtdUldQGhnPmzK2rjLMGjF1n0HdO642nZRVITVrp0AZHwXHYx');
+
 
 mongoose.connect('mongodb://localhost/cs142project6');
 
@@ -126,7 +128,6 @@ app.get('/user/:id', function (request, response) {
       }
     });
 });
-
 
 app.post('/follow/:id', function (request, response) {
     User.findOne({"_id": request.params.id}, function(err, user) {
@@ -221,6 +222,55 @@ app.post('/recommendation', function(request, response) {
     })
 });
 
+app.post('/yelp/load', function(request, response){
+
+  client.search({
+        latitude: 37.4275,
+        longitude: -122.1697,
+        radius: 3000
+  }).then(totalResponse => {
+
+      var numResults = totalResponse.jsonBody.total;
+      Restaurant.remove({}, function(err, restaurantsFound) {
+
+        for (var j = 0; j < numResults; j += 50) {
+            client.search({
+              latitude: 37.4275,
+              longitude: -122.1697,
+              radius: 3000,
+              limit: 50,
+              offset: j
+            }).then(currResponse => {
+              var restaurants = []
+                for (var i = 0; i < currResponse.jsonBody.businesses.length; i++) {
+                   var currBusiness = currResponse.jsonBody.businesses[i]
+                   restaurants.push({"id": currBusiness.id, "address": currBusiness.location.display_address.join(", "), "name": currBusiness.name, 
+                                     "latitude": currBusiness.coordinates.latitude, "longitude": currBusiness.coordinates.longitude});
+                }
+                console.log(currResponse.jsonBody.businesses.length)
+
+                Restaurant.create(restaurants, function(error, newData) {
+                    if(error)
+                    {
+                      response.status(400).send("Error adding full yelp dataset");
+                      return;
+                    }
+
+                    if (j + 50 >= numResults) {
+                      response.end(JSON.stringify({"loaded": true}));
+                    }
+              })
+            }).catch(e => {
+              response.status(400).send(e);
+              return;
+            });
+          }
+        });
+      });
+
+});
+
+
 app.get('/recommendation/list', function(request, response) {
 
    Recommendation.find({}, function(err, recommendations)
@@ -294,37 +344,13 @@ app.get('/recommendation/restaurant/:restaurantId', function(request, response) 
     });
 });
 
-app.get('/restaurant/address/:address', function(request, response){
-    Restaurant.find({"address": request.params.address}, function(err, restaurants_found){
 
-       if(err)
-        {
-          console.error('Error getting restaurant with certain address, error:', err);
-          response.status(400).send(JSON.stringify(err));
-          return;
-        }
-       if (restaurants_found.length !== 0) {
-          response.end(JSON.stringify(restaurants_found[0]));
-       } else {
-          response.end(JSON.stringify([]));
-       }
-    });
-});
+app.get('/yelp/id/:id', function(request, response){
 
-app.get('/restaurant/id/:id', function(request, response){
-    Restaurant.find({"id": request.params.id}, function(err, restaurants_found){
-
-       if(err)
-        {
-          console.error('Error getting restaurant with certain address, error:', err);
-          response.status(400).send(JSON.stringify(err));
-          return;
-        }
-       if (restaurants_found.length !== 0) {
-          response.end(JSON.stringify(restaurants_found[0]));
-       } else {
-          response.end(JSON.stringify([]));
-       }
+    client.business(request.params.id).then(currResponse => {
+      response.end(JSON.stringify(currResponse.jsonBody));
+    }).catch(e => {
+      response.status(400).send(JSON.stringify(e));
     });
 });
 
@@ -345,27 +371,6 @@ app.get('/restaurants/list',  function(request, response) {
     });
 })
 
-app.post('/restaurants/create/:address', function(request, response){
-     Restaurant.create({address: request.params.address}, function(newErr, rest_created) {
-              if(newErr) {
-                  console.error('Error creating restaurant with certain address, error:', err);
-                  response.status(400).send(JSON.stringify(err));
-                  return;
-              }
-
-              rest_created.id = rest_created._id;
-              rest_created.save(function(lastErr, updatedRestaurant) {
-                
-                if(lastErr)
-                {
-                  response.status(400).send("Error adding the new recommendation");
-                  return;
-                }
-
-                response.end(JSON.stringify(updatedRestaurant));
-              });
-          });
-});
 
 app.get('/rank/users', function(request, response) {
 

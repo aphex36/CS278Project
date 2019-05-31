@@ -9,8 +9,11 @@ var mongoose = require('mongoose');
 
 // create a schema
 var restaurantSchema = new mongoose.Schema({
-    id: String,
-    address: String
+    id: String, // Yelp one
+    address: String,
+    name: String,
+    latitude: Number,
+    longitude: Number
 });
 
 
