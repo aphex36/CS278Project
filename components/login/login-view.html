@@ -24,12 +24,20 @@
    <input class='loginTextBox' type="text" ng-model="firstNameInput" required/><br></br>
    <label>Last name: </label>
    <input class='loginTextBox' type="text" ng-model="lastNameInput" required/><br></br>
-   <label>Location: </label>
-   <input class='loginTextBox' type="text" ng-model="locationInput" required /><br></br>
-   <label>Description: </label>
-   <input class='loginTextBox' type="text" ng-model="descriptionInput" required /><br></br>
-   <label>Occupation: </label>
-   <input class='loginTextBox' type="text" ng-model="occupationInput" required /><br></br>
+   <label>Specialties: </label>
+   <select ng-model="specialtiesUsed" name="specialty" multiple>
+     <option value="thai">Thai</option>
+     <option value="pizza">Pizza</option>
+     <option value="asian">Asian</option>
+     <option value="sushi">Sushi</option>
+     <option value="indian">Indian</option>
+     <option value="breakfast">Breakfast</option>
+     <option value="american">American</option>
+     <option value="burgers">Burgers</option>
+     <option value="japanese">Japanese</option>
+     <option value="deserts">Deserts</option>
+     <option value="italian">Italian</option>
+   </select>
    <br></br>
    <input type="submit" value="Register"/>
 </form><br></br>

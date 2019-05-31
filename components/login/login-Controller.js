@@ -43,16 +43,16 @@ cs142App.controller('LoginController', ['$scope', '$http', '$routeParams', '$tim
         return;
       }
 
+      console.log("here")
+      console.log($scope.specialtiesUsed)
       //Make an http request with the given structure
       $http.post('/user',
       {"login_name" : $scope.user_name_register,
        "password": $scope.password_register,
        "first_name" : $scope.firstNameInput,
        "last_name" : $scope.lastNameInput,
-       "location" : $scope.locationInput,
-       "occupation": $scope.occupationInput,
-       "description": $scope.descriptionInput,
-       })
+       "specialties": $scope.specialtiesUsed
+      })
       .success(function(response)
       {
         //Fill up the previous user list and set up a welcome message and redirect to front page

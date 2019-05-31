@@ -38,6 +38,7 @@ var async = require('async');
 // Load the Mongoose schema for User, Photo, and SchemaInfo
 var User = require('./schema/user.js');
 var Recommendation = require('./schema/recommendation.js');
+var Restaurant = require('./schema/restaurant.js');
 var express = require('express');
 var app = express();
 var ObjectId = require('mongoose').Types.ObjectId;
@@ -67,52 +68,6 @@ app.get('/', function (request, response) {
  *                       is good for testing connectivity with  MongoDB.
  * /test/counts - Return an object with the counts of the different collections in JSON format
  */
-
-//Create an index on the comments for searching later
-Comments.collection.createIndex({"comment": "text"});
-app.get('/search', function(request, response)
-{
-  //Match the comments and find the corresponding photo using a $lookup
-  Comments.aggregate([{$match: {$text: {$search: request.query.q}}}, {$lookup: {from: "photos", localField: "belongsToPhoto", foreignField: "id", as: "joined"}}], function(err, foundPhotos)
-  {
-    if(err)
-    {
-      response.status(400).send(JSON.stringify(err));
-      return;
-    }
-    var copyOfFoundPhotos = JSON.parse(JSON.stringify(foundPhotos));
-    if(foundPhotos.length === 0)
-    {
-      response.end("[]");
-      return;
-    }
-
-    //Get the photo owner's name and the commenter's name in two nested queries
-    for(var i = 0; i < foundPhotos.length; i++)
-    {
-      (function(j)
-      {
-        User.findOne({"id": copyOfFoundPhotos[j].joined[0].user_id}, function(error, matchingPhoto)
-        {
-          User.findOne({"id": copyOfFoundPhotos[j].user_id}, function(userError, matchingUser)
-          {
-              //Call on a counter and return the modification
-              copyOfFoundPhotos[j].full_name_of_commenter = matchingUser.first_name + " " + matchingUser.last_name;
-              copyOfFoundPhotos[j].full_name_of_uploader = matchingPhoto.first_name + " " + matchingPhoto.last_name;
-              if(j === foundPhotos.length - 1)
-              {
-                response.end(JSON.stringify(copyOfFoundPhotos));
-              }
-          });
-        });
-      })(i);
-    }
-  });
-});
-
-app.get('/test/:p1', function (request, response) {
-    // Express parses the ":p1" from the URL and returns it in the request.params objects.
-    console.log('/test called with param1 = ', request.params.p1);
 
 /*
  * URL /user/list - Return all the User object.
@@ -282,7 +237,7 @@ app.get('/recommendation/list', function(request, response) {
           {
             response.end(JSON.stringify(recommendations));
           }
-    })
+    });
 });
 
 app.get('/recommendation/:id', function(request, response) {
@@ -302,6 +257,114 @@ app.get('/recommendation/:id', function(request, response) {
         response.end(JSON.stringify(recommendation_found));
       }
     });
+});
+
+app.get('/recommendation/user/:id', function(request, response) {
+    Recommendation.find({"user_id": request.params.id}, function(err, recs_found) {
+      if(err)
+      {
+        //Id was probably not a valid one so send a 400 status with the error
+        console.error('Error getting user recommendations, error:', err);
+        response.status(400).send(JSON.stringify(err));
+        return;
+      }
+      else
+      {
+        //We found the results no problem so stringify user
+        response.end(JSON.stringify(recs_found));
+      }
+    });
+});
+
+
+app.get('/recommendation/restaurant/:restaurantId', function(request, response) {
+    Recommendation.find({"restaurant": request.params.restaurantId}, function(err, recs_found){
+      if(err)
+      {
+        //Id was probably not a valid one so send a 400 status with the error
+        console.error('Error getting restaurant recommendations, error:', err);
+        response.status(400).send(JSON.stringify(err));
+        return;
+      }
+      else
+      {
+        // We found the results no problem so stringify user
+        response.end(JSON.stringify(recs_found));
+      }
+    });
+});
+
+app.get('/restaurant/address/:address', function(request, response){
+    Restaurant.find({"address": request.params.address}, function(err, restaurants_found){
+
+       if(err)
+        {
+          console.error('Error getting restaurant with certain address, error:', err);
+          response.status(400).send(JSON.stringify(err));
+          return;
+        }
+       if (restaurants_found.length !== 0) {
+          response.end(JSON.stringify(restaurants_found[0]));
+       } else {
+          response.end(JSON.stringify([]));
+       }
+    });
+});
+
+app.get('/restaurant/id/:id', function(request, response){
+    Restaurant.find({"id": request.params.id}, function(err, restaurants_found){
+
+       if(err)
+        {
+          console.error('Error getting restaurant with certain address, error:', err);
+          response.status(400).send(JSON.stringify(err));
+          return;
+        }
+       if (restaurants_found.length !== 0) {
+          response.end(JSON.stringify(restaurants_found[0]));
+       } else {
+          response.end(JSON.stringify([]));
+       }
+    });
+});
+
+app.get('/restaurants/list',  function(request, response) {
+    Restaurant.find({}, function(err, restaurants_found)
+    {
+      if(err)
+      {
+        console.error('Error getting all restaurants, error:', err);
+        response.status(400).send(JSON.stringify(err));
+        return;
+      }
+      else
+      {
+        //We found the results no problem so stringify user
+        response.end(JSON.stringify(restaurants_found));
+      }
+    });
+})
+
+app.post('/restaurants/create/:address', function(request, response){
+     Restaurant.create({address: request.params.address}, function(newErr, rest_created) {
+              if(newErr) {
+                  console.error('Error creating restaurant with certain address, error:', err);
+                  response.status(400).send(JSON.stringify(err));
+                  return;
+              }
+
+              rest_created.id = rest_created._id;
+              rest_created.save(function(lastErr, updatedRestaurant) {
+                
+                if(lastErr)
+                {
+                  response.status(400).send("Error adding the new recommendation");
+                  return;
+                }
+
+                response.end(JSON.stringify(updatedRestaurant));
+              });
+          });
 });
 
 app.get('/rank/users', function(request, response) {
@@ -380,7 +443,6 @@ app.get('/rank/users', function(request, response) {
           break
         }
       }
-      console.log(currentUser)
 
       for (var i = 0; i < userScores.length; i++) {
         if (currUserId === userScores[i].id) {
@@ -436,9 +498,7 @@ app.get('/rank/users', function(request, response) {
             response.end(JSON.stringify({"results": finalScores}))
       })
   });
-
-
-})
+});
 
 app.post('/admin/login', function(request, response)
 {
