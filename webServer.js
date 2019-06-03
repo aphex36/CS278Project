@@ -212,7 +212,7 @@ app.post('/recommendation', function(request, response) {
           reviewObj.id = reviewObj._id;
           reviewObj.save(function(newErr, newReview)
           {
-            
+
             if(newErr)
             {
               response.status(400).send("Error adding the new recommendation");
@@ -245,7 +245,7 @@ app.post('/yelp/load', function(request, response){
               var restaurants = []
                 for (var i = 0; i < currResponse.jsonBody.businesses.length; i++) {
                    var currBusiness = currResponse.jsonBody.businesses[i]
-                   restaurants.push({"id": currBusiness.id, "address": currBusiness.location.display_address.join(", "), "name": currBusiness.name, 
+                   restaurants.push({"id": currBusiness.id, "address": currBusiness.location.display_address.join(", "), "name": currBusiness.name,
                                      "latitude": currBusiness.coordinates.latitude, "longitude": currBusiness.coordinates.longitude});
                 }
 
@@ -579,7 +579,7 @@ app.get('/rank/users', function(request, response) {
                 finalScores.push(userScores[i])
               }
             }
-            
+
             response.end(JSON.stringify({"results": finalScores}))
       })
   });
@@ -651,7 +651,7 @@ app.post('/user', function(request, response)
           userObj.id = userObj._id;
           userObj.save(function(newErr, updatedUser)
           {
-            
+
             if(newErr)
             {
               response.status(400).send("Error adding the new user");

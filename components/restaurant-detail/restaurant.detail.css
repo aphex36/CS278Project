@@ -1,0 +1,53 @@
+.profile{
+  padding-left: 10px;
+}
+.detailImage{
+  cursor: pointer;
+  width: 150px;
+  height: 150px;
+}
+.alignCenter{
+  text-align: center;
+}
+.heightOfFavorites{
+  height: 25px;
+}
+.removeBtn{
+  float: left;
+}
+.photoGallery{
+  display:inline-block;
+  width:20%;
+}
+.deleteComment{
+  color: #6699ff;
+  padding-right: 10px;
+  padding-top: 10px;
+  cursor:pointer;
+  float:right;
+}
+.formatForm{
+  padding-left: 10px;
+}
+ul {
+  list-style-type: none;
+}
+.listOfActivities{
+  border: 1px solid black;
+}
+div[name="loginForm"]{
+  text-align: center;
+}
+.loginTextBox{
+  margin-left: 20px;
+}
+.thumbnail{
+  cursor: pointer;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  width: 100px;
+  height: 100px;
+}
+.separator{
+  border: 1px solid black;
+}

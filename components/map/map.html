@@ -1,15 +1,49 @@
 <div class="mapscreen">
-    <h2 class='heading'>Map</h2>
+    <h2 class='heading'>Find restaurants</h2>
     <div id="map"></div>
 </div>
 
 <script>
-  var map;
+  // load arrays from the database
+  // Restaurant.name
+  var markers = ['marker1', 'marker2']
+  // Restaurant.latitude + .longitude
+  var markers_locs = [{lat: 37.4, lng: -122.2}, {lat: 37.43, lng: -122.12}]
+  // Restaurant.address
+  var markers_addresses = ['14 main st.', '3456 avenue rd.']
+  // based on Restaurant.id, go to that restaurant's page on our site
+  var markers_urls = ['http://yahoo.com', 'http://google.com']
+
   function initMap() {
-    map = new google.maps.Map(document.getElementById('map'), {
-      center: {lat: 37.4275, lng: -122.1697},
-      zoom: 8
+    var stanford = {lat: 37.4275, lng: -122.1697};
+    var map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 13,
+      center: stanford
     });
+
+    function initMarker(name, loc, address, url) {
+      var contentString = '<h4>' + name + '</h4>' +
+        '<p>' + address + '</p>' +
+        '<a href="' + url + '">Go to ' + name + "'s profile</a>";
+
+      var infowindow = new google.maps.InfoWindow({
+        content: contentString
+      });
+
+      var marker = new google.maps.Marker({
+        position: loc,
+        map: map,
+        title: name
+      });
+
+      marker.addListener('click', function() {
+        infowindow.open(map, marker);
+      });
+    }
+
+    for (var i = 0; i < markers.length; i++) {
+      initMarker(markers[i], markers_locs[i], markers_addresses[i], markers_urls[i])
+    }
   }
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCigFTnwvalH8t1qB2M40XPEy0GiI17fVw&callback=initMap"
