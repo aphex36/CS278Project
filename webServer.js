@@ -55,10 +55,7 @@ var url = 'mongodb://heroku_ktb0hw7m:cpkkrgio02l99880f70j9c939h@ds231387.mlab.co
 
     // do some work here with the database.
 
-    //Close connection
-    db.close();
-  }
-});
+
 
 // Load the Mongoose schema for User, Photo, and SchemaInfo
 var User = require('./schema/user.js');
@@ -731,4 +728,9 @@ app.post('/admin/logout', function(request, response)
 var server = app.listen(process.env.PORT || 3000, function () {
     var port = server.address().port;
     console.log('Listening at http://localhost:' + port + ' exporting the directory ' + __dirname);
+});
+
+    //Close connection
+    db.close();
+  }
 });
