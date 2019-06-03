@@ -15,16 +15,28 @@
   var markers_urls = ['http://yahoo.com', 'http://google.com']
 
   function initMap() {
+
+    var httpGetReq = function(theUrl) {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+        xmlHttp.send( null );
+        return JSON.parse(xmlHttp.responseText);
+    }
+
+    var allRestaurants = httpGetReq("/restaurants/list")
+
+
+
     var stanford = {lat: 37.4275, lng: -122.1697};
     var map = new google.maps.Map(document.getElementById('map'), {
-      zoom: 13,
+      zoom: 15,
       center: stanford
     });
 
     function initMarker(name, loc, address, url) {
       var contentString = '<h4>' + name + '</h4>' +
         '<p>' + address + '</p>' +
-        '<a href="' + url + '">Go to ' + name + "'s profile</a>";
+        '<a href="#/restaurant/' + url + '">Go to ' + name + "'s profile</a>";
 
       var infowindow = new google.maps.InfoWindow({
         content: contentString
@@ -41,8 +53,8 @@
       });
     }
 
-    for (var i = 0; i < markers.length; i++) {
-      initMarker(markers[i], markers_locs[i], markers_addresses[i], markers_urls[i])
+    for (var i = 0; i < allRestaurants.length; i++) {
+      initMarker(allRestaurants[i].name, {lat: allRestaurants[i].latitude, lng: allRestaurants[i].longitude}, allRestaurants[i].address, allRestaurants[i].id)
     }
   }
 </script>

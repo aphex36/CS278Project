@@ -21,6 +21,9 @@ cs142App.controller('UserListController', ['$scope', '$location',
                  return b.score - a.score
              })
              $scope.ranks.users = actual_sorted_results
+             if (actual_sorted_results.length > 6) {
+                $scope.ranks.users = actual_sorted_results.slice(0, 7)
+             }
           });
         };
         $scope.fillUpList();

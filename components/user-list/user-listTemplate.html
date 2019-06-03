@@ -2,7 +2,7 @@
   <div ng-if="$parent.showList">
     <div>
       <div>
-        <h3>Most similar users</h3>
+        <h3>Most similar users on Food App</h3>
       	<div ng-if="ranks.users.length !== 0">
     	    <div class='userList' ng-repeat="user in ranks.users">
     	      <h3 class="inlineHeader"><a href='#/users/{{user.id}}'>{{user.first_name}} {{user.last_name}}</a></h3>
