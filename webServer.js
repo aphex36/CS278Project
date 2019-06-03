@@ -49,7 +49,6 @@ var fs = require('fs');
 const yelp = require('yelp-fusion');
 const client = yelp.client('FcGWwwL2vqkvQvJJSZoWulgmCZiMcLP0DWU9TUhhdCpq4YOI8rBjCBN6RP06UKbSlN4tLs_n_I9hgwLDtdUldQGhnPmzK2rjLMGjF1n0HdO642nZRVITVrp0AZHwXHYx');
 
-
 mongoose.connect('mongodb://localhost/cs142project6');
 
 // We have the express static module (http://expressjs.com/en/starter/static-files.html) do all
@@ -129,7 +128,7 @@ app.get('/user/:id', function (request, response) {
     });
 });
 
-app.post('/follow/:id', function (request, response) {
+app.get('/follow/:id', function (request, response) {
     User.findOne({"_id": request.params.id}, function(err, user) {
 
       if(err)
@@ -194,17 +193,19 @@ app.post('/follow/:id', function (request, response) {
 app.post('/recommendation', function(request, response) {
 
 
-   if(!request.body.user_id || !request.body.review || !request.body.strength)
+   if(!request.session.userLoginID || !request.body.review || !request.body.strength)
    {
+      console.log("here's an issue")
       response.status(400).send("Need user id, strength, and review content");
       return;
    }
 
    Recommendation.create({
-       user_id: request.body.user_id,
+       user_id: request.session.userLoginID,
        review: request.body.review,
        strength: request.body.strength,
-       types: request.body.types
+       types: request.body.types,
+       restaurant: request.body.restaurant
    }, function(err, reviewObj)
         {
           //Created the user so now create the HistoryInfo
@@ -247,7 +248,6 @@ app.post('/yelp/load', function(request, response){
                    restaurants.push({"id": currBusiness.id, "address": currBusiness.location.display_address.join(", "), "name": currBusiness.name, 
                                      "latitude": currBusiness.coordinates.latitude, "longitude": currBusiness.coordinates.longitude});
                 }
-                console.log(currResponse.jsonBody.businesses.length)
 
                 Restaurant.create(restaurants, function(error, newData) {
                     if(error)
@@ -320,9 +320,42 @@ app.get('/recommendation/user/:id', function(request, response) {
       }
       else
       {
-        //We found the results no problem so stringify user
-        response.end(JSON.stringify(recs_found));
+
+        var restaurant_ids = []
+        for (var i = 0; i < recs_found.length; i++) {
+           restaurant_ids.push(recs_found[i].restaurant)
+        }
+        Restaurant.find({"id": { $in: restaurant_ids}}, function(new_err, restaurants_found) {
+
+            if (new_err) {
+               response.status(400).send(JSON.stringify(new_err));
+               return;
+            }
+
+            var restaurantIdToObj = {}
+            for (var j = 0; j < restaurants_found.length; j++) {
+                restaurantIdToObj[restaurants_found[j].id] = restaurants_found[j]
+            }
+
+            var modified_recs = JSON.parse(JSON.stringify(recs_found))
+            for (var j = 0; j < modified_recs.length; j++) {
+                modified_recs[j].name = restaurantIdToObj[modified_recs[j].restaurant].name
+                modified_recs[j].address = restaurantIdToObj[modified_recs[j].restaurant].address
+            }
+            response.end(JSON.stringify(modified_recs));
+        })
       }
+    });
+});
+
+app.get('/search', function(request, response) {
+    Restaurant.find({
+      $text: { $search: request.query.q},
+    }, function(err, restaurants) {
+      if (err) {
+        response.status(400).send(JSON.stringify(err));
+      }
+      response.end(JSON.stringify(restaurants));
     });
 });
 
@@ -338,8 +371,34 @@ app.get('/recommendation/restaurant/:restaurantId', function(request, response) 
       }
       else
       {
-        // We found the results no problem so stringify user
-        response.end(JSON.stringify(recs_found));
+        var modified_recs = JSON.parse(JSON.stringify(recs_found))
+
+        var user_ids = []
+        for (var i = 0; i < modified_recs.length; i++) {
+            user_ids.push(modified_recs[i].user_id)
+        }
+
+        var userIdToName = {}
+        User.find({"id": { $in: user_ids}}, function(new_err, users_found) {
+            if(new_err)
+            {
+              //Id was probably not a valid one so send a 400 status with the error
+              console.error('Error getting restaurant recommendations with user names, error:', new_err);
+              response.status(400).send(JSON.stringify(new_err));
+              return;
+            }
+
+            for (var j = 0; j < users_found.length; j++) {
+                userIdToName[users_found[j].id] = users_found[j].first_name + " " + users_found[j].last_name 
+            }
+
+            for (var j = 0; j < modified_recs.length; j++) {
+                 modified_recs[j].full_name = userIdToName[modified_recs[j].user_id]
+            }
+            response.end(JSON.stringify(modified_recs));
+
+        })
+
       }
     });
 });
@@ -371,12 +430,34 @@ app.get('/restaurants/list',  function(request, response) {
     });
 })
 
+app.get('/restaurant/id/:id',  function(request, response) {
+    Restaurant.find({"id": request.params.id}, function(err, restaurants_found)
+    {
+      if(err)
+      {
+        console.error('Error getting all restaurants, error:', err);
+        response.status(400).send(JSON.stringify(err));
+        return;
+      }
+      else
+      {
+        //We found the results no problem so stringify user
+        response.end(JSON.stringify(restaurants_found));
+      }
+    });
+})
 
 app.get('/rank/users', function(request, response) {
 
-  var currUserId = request.body.id
+  if(!request.session.userLoggedIn)
+  {
+    response.status(401).send("No authorization to make request");
+    return;
+  }
+
+
+  var currUserId = request.session.userLoginID
   var cosineSimilarity = function(arr1, arr2) {
-    console.log("arr1 ",arr1)
      var dictionaryOne = {}
      var dictionaryTwo = {}
      for (var i = 0; i < arr1.length; i++) {
@@ -425,7 +506,6 @@ app.get('/rank/users', function(request, response) {
 
       for (var k = 0; k < recs.length; k++) {
         var rec = recs[k]
-        console.log(rec.strength)
         for (var i = 0; i < rec.types.length; i++) {
             for (var j = 0; j < rec.strength; j++) {
                 newArr.push(rec.types[i])

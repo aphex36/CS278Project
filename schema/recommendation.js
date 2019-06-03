@@ -9,12 +9,12 @@ var mongoose = require('mongoose');
 
 // create a schema
 var recommendationSchema = new mongoose.Schema({
-    id: String,     // Unique ID identifying this user
-    user_id: mongoose.Schema.Types.ObjectId,
+    id: String, 
+    user_id: String,
     review: String,
     types: [String],
     strength: Number,
-    restaurant: mongoose.Schema.Types.ObjectId
+    restaurant: String
 });
 
 

@@ -15,30 +15,58 @@ cs142App.controller('UserDetailController', ['$scope', '$http', '$routeParams',
     $scope.$parent.toggleAdvanced = function()
     {
     };
-    $scope.redirect = function(photoID)
+
+    $scope.$parent.FetchModel("/current_user/", function(curr_response) 
     {
-      window.location = "http://localhost:3000/photo-share.html#/photos/" + userId + "/" + photoID;
-    };
-    $scope.$parent.FetchModel("/user/" + userId, function(response)
-    {
-      $scope.userDetail.user = response;
-      $scope.$parent.main.current_location = "Viewing " + $scope.userDetail.user.first_name + " " + $scope.userDetail.user.last_name + "'s profile";
-    });
-    $http.get("/mostCommentedPic/" + userId)
-    .success(function(response)
-    {
-      if(response.file_name)
-      {
-        $scope.mostCommentedPic = response;
+      $scope.userDetail.currUserId = curr_response.user_id
+      if (userId == curr_response.user_id) {
+        $scope.userDetail.current_user = true;
+      } else {
+        $scope.userDetail.current_user = false;
       }
-    });
-    $http.get("/mostRecentPic/" + userId)
-    .success(function(response)
-    {
-      if(response.file_name)
+      $scope.$parent.FetchModel("/user/" + userId, function(response)
       {
-        $scope.mostRecentPic = response;
-        $scope.mostRecentPic.formattedTime = window.cs142FormatTime(new Date(response.date_time));
-      }
+        $scope.userDetail.user = response;
+        $scope.userDetail.followers = response.followers.length;
+        $scope.userDetail.following = response.following.length;
+
+        $scope.userDetail.follow_action = "Follow"
+        for (var i = 0; i < response.followers.length; i++) {
+           if (response.followers[i] === $scope.userDetail.currUserId) {
+              $scope.userDetail.follow_action = "Unfollow"
+              break
+           }
+        }
+        if (response.specialties.length !== 0) {
+          $scope.userDetail.specialties = response.specialties.join(", ")
+        } else {
+          $scope.userDetail.specialties = "none"
+        }
+
+
+        $scope.$parent.main.current_location = "Viewing " + $scope.userDetail.user.first_name + " " + $scope.userDetail.user.last_name + "'s profile";
+      });
+
+      $scope.$parent.FetchModel("/recommendation/user/" + $routeParams.userId, function(res) {
+          $scope.recommendations = res
+      })
+
     });
+
+    $scope.toggleFollow = function() {
+         $scope.$parent.FetchModel("/follow/" + $scope.userDetail.user.id, function(curr_response) 
+         {
+            if (curr_response.followed == true) {
+               $scope.userDetail.follow_action = "Unfollow"
+               $scope.userDetail.followers += 1
+            } else {
+               $scope.userDetail.follow_action = "Follow"
+               $scope.userDetail.followers -= 1
+            }
+
+            $scope.$apply()
+
+         });
+    }
+
 }]);

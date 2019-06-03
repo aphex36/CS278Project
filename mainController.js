@@ -45,6 +45,10 @@ cs142App.config(['$routeProvider',
               templateUrl: 'components/feed/feedTemplate.html',
               controller: 'FeedController'
             }).
+            when('/restaurant/:restaurantId', {
+              templateUrl: 'components/restaurant/restaurant.html',
+              controller: 'restaurantController'
+            }).
             otherwise({
                 redirectTo: '/front_page'
             });
@@ -93,7 +97,7 @@ cs142App.controller('MainController', ['$scope', '$http', '$location', '$rootSco
               $scope.main.welcome_message = "Login to your account";
               $scope.main.current_location = "";
               $scope.userIsLoggedIn = undefined;
-              window.location = 'http://localhost:3000/photo-share.html#/login-register';
+              $location.url('/login-register')
             })
             .error(function(response)
             {
@@ -107,7 +111,7 @@ cs142App.controller('MainController', ['$scope', '$http', '$location', '$rootSco
               $scope.main.welcome_message = "Login to your account";
               $scope.main.current_location = "";
               $scope.userIsLoggedIn = undefined;
-              window.location = 'http://localhost:3000/photo-share.html#/login-register';
+              $location.url('/login-register')
             })
             .error(function(response)
             {
@@ -159,12 +163,6 @@ cs142App.controller('MainController', ['$scope', '$http', '$location', '$rootSco
           request.send(JSON.stringify(dataGiven));
         };
 
-        $scope.FetchModel('/test/info', function(response)
-        {
-          $scope.info = {};
-          $scope.info.version = response.version;
-        });
-
         var selectedPhotoFile;   // Holds the last file selected by the user
 
         // Called on file selection - we simply save a reference to the file in selectedPhotoFile
@@ -204,8 +202,17 @@ cs142App.controller('MainController', ['$scope', '$http', '$location', '$rootSco
 
         $scope.runSearch = function()
         {
-          window.location = 'http://localhost:3000/photo-share.html#/search?q=' + $scope.searchTerms;
+          $location.url('/search?q=' + $scope.searchTerms)
         };
+
+
+        $scope.loadOwnProfile = function() {
+              $scope.FetchModel('/current_user', function(response) {
+                 $scope.main.current_user = response.user_id
+                 $location.url('/users/' + $scope.main.current_user)
+            });
+        };
+        
         $scope.deleteAccount = function()
         {
           $http.get('/current_user')

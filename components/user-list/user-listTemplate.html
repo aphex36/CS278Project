@@ -1,10 +1,16 @@
 <div ng-cloak>
   <div ng-if="$parent.showList">
-    <div class='userList' ng-repeat="user in main.users">
-      <h2 class="inlineHeader"><a href='#/users/{{user.id}}'>{{user.first_name}} {{user.last_name}}</a></h2>
-      <div ng-if="specificPicturePicked" class='bubbleContainer'>
-        <span class='photoBubble'><b><a class='whiteLink' href='#/photos/{{user.id}}'>{{user.numPhotos}}</a></b></span>
-        <span class='commentBubble'><b><a class='whiteLink' href='#/comments/{{user.id}}'>{{user.numberOfComments}}</a></b></span>
+    <div>
+      <div>
+        <h3>Most similar users</h3>
+      	<div ng-if="ranks.users.length !== 0">
+    	    <div class='userList' ng-repeat="user in ranks.users">
+    	      <h3 class="inlineHeader"><a href='#/users/{{user.id}}'>{{user.first_name}} {{user.last_name}}</a></h3>
+    	    </div>
+    	 </div>
+      	<div ng-if="ranks.users.length === 0 || !ranks.users">
+      		<label>Not enough users found!</label>
+      	</div>
       </div>
     </div>
   </div>

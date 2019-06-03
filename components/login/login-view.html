@@ -1,4 +1,4 @@
-<h2 class='heading'>Login To Lamebook!</h2>
+<h2 class='heading'>Login To Food App!</h2>
 <form name="login_form" class='formatForm' ng-submit="submitLogin(login_form)" class="css-form">
    <label>Username: </label>
    <input class='loginTextBox' type="text" name="userName" ng-model="user_name" required/>
@@ -11,33 +11,54 @@
    <input type="submit" value="Submit"/>
 </form>
 <br></br>
-<h2 class='heading'>Register Lamebook!</h2>
+<h2 class='heading'>Register to Food App!</h2>
 <form name="register_form" class='formatForm' ng-submit="submitRegister(register_form)" class="css-form">
    <label class='errorMessageColor'>{{errorMessage}}</label><br>
-   <label>Username: </label>
+   <label>Username:</label>
    <input class='loginTextBox' type="text" name="userName" ng-model="user_name_register" required /><br></br>
-   <label>Password: </label>
+   <label>Password:&nbsp;</label>
    <input class='loginTextBox' type="password" name="passwordGiven" ng-model="password_register" required /><br></br>
-   <label>Repeat password: </label>
+   <label>Repeat:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
    <input class='loginTextBox' type="password" name="passwordGiven" ng-model="repeatedPassword" required /><br></br>
    <label>First name: </label>
    <input class='loginTextBox' type="text" ng-model="firstNameInput" required/><br></br>
    <label>Last name: </label>
    <input class='loginTextBox' type="text" ng-model="lastNameInput" required/><br></br>
    <label>Specialties: </label>
-   <select ng-model="specialtiesUsed" name="specialty" multiple>
-     <option value="thai">Thai</option>
-     <option value="pizza">Pizza</option>
-     <option value="asian">Asian</option>
-     <option value="sushi">Sushi</option>
-     <option value="indian">Indian</option>
-     <option value="breakfast">Breakfast</option>
-     <option value="american">American</option>
-     <option value="burgers">Burgers</option>
-     <option value="japanese">Japanese</option>
-     <option value="deserts">Deserts</option>
-     <option value="italian">Italian</option>
-   </select>
+
+    <label class="checkbox-inline">
+      <input type="checkbox" value="Thai">Thai
+    </label>
+    <label class="checkbox-inline">
+      <input type="checkbox" value="Pizza">Pizza
+    </label>
+    <label class="checkbox-inline">
+      <input type="checkbox" value="Asian">Asian
+    </label>
+
+
+    <label class="checkbox-inline">
+      <input type="checkbox" value="Sushi">Sushi
+    </label>
+    <label class="checkbox-inline">
+      <input type="checkbox" value="Indian">Indian
+    </label>
+    <label class="checkbox-inline">
+      <input type="checkbox" value="Breakfast">Breakfast
+    </label>
+    <label class="checkbox-inline">
+      <input type="checkbox" value="American">American
+    </label>
+
+    <label class="checkbox-inline">
+      <input type="checkbox" value="Burgers">Burgers
+    </label>
+    <label class="checkbox-inline">
+      <input type="checkbox" value="Japanese">Japanese
+    </label>
+    <label class="checkbox-inline">
+      <input type="checkbox" value="Deserts">Deserts
+    </label>
    <br></br>
    <input type="submit" value="Register"/>
 </form><br></br>

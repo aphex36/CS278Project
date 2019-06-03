@@ -1,27 +1,26 @@
-<div class='profile'>
-  <h2>{{userDetail.user.first_name}} {{userDetail.user.last_name}}</h2>
-  <b>Location: </b> <span>{{userDetail.user.location}}</span>
-  <br></br>
-  <b>Occupation: </b><span>{{userDetail.user.occupation}}</span>
-  <br></br>
-  <b>Description: </b> <span>{{userDetail.user.description}}</span>
-  <br></br>
-  <a href='#/photos/{{userDetail.user.id}}'><b>Photos</b></a><br></br>
-  <div ng-if="mostCommentedPic">
-    <label><b>Most commented picture</b></label><br><img ng-click="redirect(mostCommentedPic._id)" ng-if="mostCommentedPic" class='detailImage' ng-src='../../images/{{mostCommentedPic.file_name}}'></img><br>
-    <label>Number of Comments: {{mostCommentedPic.num_comments}}</label>
-    <br></br>
+<div class='profile' style='padding-left: 50px; padding-top: 50px'>
+  <div style="max-width: 33%; display: inline-block">
+    <img style="width: 250px; height: 200px; border: 3px solid black" src="../images/anonymous.jpg"></img>
+    <h3>{{userDetail.user.first_name}} {{userDetail.user.last_name}} 
+    </h3>
+    <button ng-click="toggleFollow()" ng-if="!userDetail.current_user">{{userDetail.follow_action}}</button>
+    <h4>Followers: {{userDetail.followers}}, Following: {{userDetail.following}}</h4>
+    <h4>Specialties: {{userDetail.specialties}} </h4>
   </div>
-  <div ng-if="!mostCommentedPic">
-    <label><b>Most commented picture</b></label><label>: No pictures so far</label>
-  </div>
-  <div ng-if="mostRecentPic">
-    <label><b>Most recent picture</b></label><br><img ng-click="redirect(mostRecentPic._id)" ng-if="mostRecentPic" class='detailImage' ng-src='../../images/{{mostRecentPic.file_name}}'></img>
-    <br></br>
-    <label>Posted on {{mostRecentPic.formattedTime}}</label>
-    <br></br>
-  </div>
-  <div ng-if="!mostRecentPic">
-    <label><b>Most recent picture</b></label><label>: No pictures so far</label>
-  </div>
+
+  <div ng-if="recommendations.length !== 0" style="display: inline-block; width: 55%; padding-left: 40px; vertical-align: top">
+  	<h3 style='text-align: center; margin: 0px'>Reviews</h3>
+  	<div style='border: 1px solid black; '>
+	  <div class='commentUserContainer profile' ng-repeat="recommendation in recommendations">
+		  <a href='#/restaurant/{{recommendation.restaurant}}'>{{recommendation.name}}</a> -- <label>{{recommendation.address}}</label>
+		  <br>
+		  <h3 ng-if="recommendation.strength == 1">Nope <i class="fa fa-minus"></i><i class="fa fa-star"></i></h3>
+		  <h3 ng-if="recommendation.strength == 2">Meh <i class="fa fa-minus"></i> <i class="fa fa-star"></i><i class="fa fa-star"></i></h3>
+		  <h3 ng-if="recommendation.strength >= 3">Great <i class="fa fa-minus"></i> <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i></h3>
+
+		  <label>{{recommendation.review}}</label>
+		  <br></br>
+	   </div>
+	</div>
+	</div>
 </div>

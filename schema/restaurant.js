@@ -16,6 +16,7 @@ var restaurantSchema = new mongoose.Schema({
     longitude: Number
 });
 
+restaurantSchema.index({ name: 'text', address: 'text'});
 
 // the schema is useless so far
 // we need to create a model using it

@@ -1,0 +1,86 @@
+<div class='profile' style='padding-left: 50px; padding-top: 10px'>
+  <div style="max-width: 33%; display: inline-block">
+  	<h3>{{restaurant.restaurantInfo.name}}</h3>
+  	<div style="display: none" id="latitudeDiv">{{restaurant.restaurantInfo.coordinates.latitude}}</div>
+  	<div style="display: none" id="longitudeDiv">{{restaurant.restaurantInfo.coordinates.longitude}}</div>
+
+    <div class="mapscreen" style="width: 250px; height: 220px">
+	    <div id="map" style="max-width: 250px; max-height: 220px"></div>
+	</div>
+	<br></br>
+	<a style="padding-top: 10px" href='{{restaurant.restaurantInfo.url}}'>Website</a>
+	<h4>Phone Number: {{restaurant.restaurantInfo.display_phone}}</h4>
+    <h4>Categories
+    	<ul style="list-style-type:square;">
+    		<li ng-repeat="category in restaurant.restaurantInfo.categories">{{category.title}}</li>
+    	</ul>
+    </h4>
+  </div>
+
+  <div style="display: inline-block; width: 64%; padding-left: 40px; padding-top: 20px; vertical-align: top">
+  	<h3 style='text-align: center; margin: 0px'>Gallery</h3><br>
+  	<h4 ng-if="restaurant.restaurantInfo.photos.length === 0">No photos found!</h4>
+  	<img style="width: 220px; height: 220px; padding-right: 5px" ng-repeat="image in restaurant.restaurantInfo.photos" ng-src="{{image}}">
+
+  	<h3 style='text-align: center'>Reviews</h3>
+    <textarea id="reviewContent" placeholder="Write a review" style="width: 99%; height: 150px"></textarea><br></br>
+    <select id="reviewRating">
+      <option>Great!</option>
+      <option>Meh</option>
+      <option>Nope</option>
+    </select>
+    <button ng-click="submitReview()" style="margin-left: 20px"><i class="fa fa-pencil-square"></i> Submit</button>
+    <br></br>
+  	<h4 style='text-align: center' ng-if="review.reviews.length === 0">No reviews yet!</h4>
+  	<div class='commentUserContainer profile' style='border: 1px solid black' ng-repeat="review in review.reviews">
+		  <a href='#/users/{{review.user_id}}'>{{review.full_name}}</a>
+		  <br>
+		  <h3 ng-if="review.strength == 1">Nope <i class="fa fa-minus"></i><i class="fa fa-star"></i></h3>
+		  <h3 ng-if="review.strength == 2">Meh <i class="fa fa-minus"></i> <i class="fa fa-star"></i><i class="fa fa-star"></i></h3>
+		  <h3 ng-if="review.strength >= 3">Great! <i class="fa fa-minus"></i> <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i></h3>
+
+		  <label>{{review.review}}</label>
+		  <br></br>
+	   </div>
+     <br></br>
+
+</div>
+<!--
+  <div ng-if="recommendations.length !== 0" style="display: inline-block; width: 55%; padding-left: 40px; vertical-align: top">
+  	<h3 style='text-align: center; margin: 0px'>Gallery</h3>
+  	<div style='border: 1px solid black; '>
+	  <div class='commentUserContainer profile' ng-repeat="recommendation in recommendations">
+		  <a href='#/something'>{{recommendation.name}}</a> -- <label>{{recommendation.address}}</label>
+		  <br></br>
+
+		  <h3 ng-if="recommendation.strength == 1">Great! <i class="fa fa-minus"></i><i class="fa fa-star"></i></h3>
+		  <h3 ng-if="recommendation.strength == 2">Meh <i class="fa fa-minus"></i> <i class="fa fa-star"></i><i class="fa fa-star"></i></h3>
+		  <h3 ng-if="recommendation.strength == 3">Nope <i class="fa fa-minus"></i> <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i></h3>
+
+		  <label>{{recommendation.review}}</label>
+		  <br></br>
+	   </div>
+	</div>
+	</div>
+</div>-->
+<script>
+  var map;
+  function httpGet(theUrl)
+  {
+	    var xmlHttp = new XMLHttpRequest();
+	    xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+	    xmlHttp.send( null );
+	    return xmlHttp.responseText;
+  }
+
+  function initMap() {
+	var index = window.location.href.indexOf("/restaurant/")  	
+  	var response = JSON.parse(httpGet('/restaurant/id/' + window.location.href.substring(index + "/restaurant/".length)))
+    map = new google.maps.Map(document.getElementById('map'), {
+      center: {lat: response[0].latitude, lng: response[0].longitude},
+      zoom: 17
+    });
+  }
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCigFTnwvalH8t1qB2M40XPEy0GiI17fVw&callback=initMap"
+async defer></script>

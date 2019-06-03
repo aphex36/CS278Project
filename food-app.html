@@ -23,6 +23,8 @@
         <script src="components/search/SearchController.js"></script>
         <link rel="stylesheet" type="text/css" href="components/map/map.css" />
         <script src="components/map/mapController.js"></script>
+        <script src="components/restaurant/restaurantController.js"></script>
+
         <script src="components/user-photos/user-photosController.js"></script>
         <link rel="stylesheet" type="text/css" href="components/user-photos/user-photos.css" />
 
@@ -37,26 +39,26 @@
         <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
         <script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
         <script src="modelData/format-time.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="
+        sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/multi-select/0.9.12/js/jquery.multi-select.js"></script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/multi-select/0.9.12/css/multi-select.css"></link>
+
     </head>
 
     <body layout="column">
 
-        <md-toolbar layout = "row">
+        <md-toolbar style="background-color: rgb(210,0,0); height: 20px" layout = "row">
           <div class='fullSpace'>
             <div class='fullSpace'>
-              <h3 class='headerPadding'>Food App</h3>
-              <span class='versionInfo'> Version: {{info.version}}<br>
+              <h3 class='headerPadding' style="padding-top: 10px">Food App</h3>
+              <span class='versionInfo'><br>
                 <button ng-if="userIsLoggedIn" ng-click="logoutUser()">Logout</button><br>
-                <button ng-if="userIsLoggedIn" ng-click="deleteAccount()">Delete Account</button><br>
               </span>
             </div>
             <br></br>
-            <span class='locationTitle'>{{main.welcome_message}}!<br></span>
-            <span class='locationTitle'> {{main.current_location}}<br></span>
-            <span ng-if="userIsLoggedIn" class='loginSize'>
-              <input type="file" accept="image/*"  onchange="angular.element(this).scope().inputFileNameChanged(this)">
-              <input type="submit" ng-click='uploadPhoto()'value="Upload"/>
-            </span>
           </div>
 
         </md-toolbar>
@@ -65,16 +67,11 @@
 
             <md-sidenav md-is-locked-open="true" class="md-whiteframe-z2">
               <div ng-show="showCheckBox" class='searchPane'>
-                <input class='searchBar' placeholder="Search for pictures" ng-model='searchTerms' />
-                <button ng-click='runSearch()'><i class='fa fa-search'></i></button>
+                <input class='searchBar' placeholder="Search for restaurants" ng-model='searchTerms' />
+                <button ng-click='runSearch()'><i class='fa fa-search'></i></button><br></br>
+                <button style='width:68%' ng-click="loadOwnProfile()" class='searchBar'>My profile&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class='fa fa-user'></i></button>
               </div>
-              <label ng-show="showCheckBox">
-                  <br>
-                  <input id="advancedFeatureCb" ng-change="toggleAdvanced()" ng-model="specificPicturePicked" type="checkbox">Advanced Features
-                  <br></br>
-              </label>
-              <a ng-show="showCheckBox" href='#/favorites'>My Favorites</a><br>
-              <a ng-show="showCheckBox" href='#/feed'>Activity Feed</a><br></br>
+
               <div id='listView' ng-include="'components/user-list/user-listTemplate.html'" ng-controller="UserListController"></div>
             </md-sidenav>
 
