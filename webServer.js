@@ -31,34 +31,54 @@
  *
  */
 
-// var mongoose = require('mongoose');
+var mongoose = require('mongoose');
 var async = require('async');
 
-//lets require/import the mongodb native drivers.
-var mongodb = require('mongodb');
+// //lets require/import the mongodb native drivers.
+// var mongodb = require('mongodb');
 
-//We need to work with "MongoClient" interface in order to connect to a mongodb server.
-var MongoClient = mongodb.MongoClient;
+// //We need to work with "MongoClient" interface in order to connect to a mongodb server.
+// var MongoClient = mongodb.MongoClient;
 
-// Connection URL. This is where your mongodb server is running.
+// // Connection URL. This is where your mongodb server is running.
 
 //(Focus on This Variable)
-var url = 'mongodb://heroku_ktb0hw7m:cpkkrgio02l99880f70j9c939h@ds231387.mlab.com:31387/heroku_ktb0hw7m';
+var uri = 'mongodb://heroku_ktb0hw7m:cpkkrgio02l99880f70j9c939h@ds231387.mlab.com:31387/heroku_ktb0hw7m';
 //(Focus on This Variable)
 
-// Use connect method to connect to the Server
-  MongoClient.connect(url, function (err, db) {
-  if (err) {
-    console.log('Unable to connect to the mongoDB server. Error:', err);
-  } else {
-    console.log('Connection established to', url);
-
-    // do some work here with the database.
-
-    //Close connection
-    db.close();
+var options = {
+  "server" : {
+    "socketOptions" : {
+      "keepAlive" : 300000,
+      "connectTimeoutMS" : 30000
+    }
+  },
+  "replset" : {
+    "socketOptions" : {
+      "keepAlive" : 300000,
+      "connectTimeoutMS" : 30000
+    }
   }
-});
+}
+// // Use connect method to connect to the Server
+//   MongoClient.connect(url, function (err, db) {
+//   if (err) {
+//     console.log('Unable to connect to the mongoDB server. Error:', err);
+//   } else {
+//     console.log('Connection established to', url);
+
+//     // do some work here with the database.
+
+//     //Close connection
+//     db.close();
+//   }
+// });
+
+mongoose.connect(uri, options);
+
+var db = mongoose.connection;
+
+db.on('error', console.error.bind(console, 'connection error:'));
 
 // Load the Mongoose schema for User, Photo, and SchemaInfo
 var User = require('./schema/user.js');
@@ -74,7 +94,7 @@ var fs = require('fs');
 const yelp = require('yelp-fusion');
 const client = yelp.client('FcGWwwL2vqkvQvJJSZoWulgmCZiMcLP0DWU9TUhhdCpq4YOI8rBjCBN6RP06UKbSlN4tLs_n_I9hgwLDtdUldQGhnPmzK2rjLMGjF1n0HdO642nZRVITVrp0AZHwXHYx');
 
-// mongoose.connect('mongodb://heroku_ktb0hw7m:cpkkrgio02l99880f70j9c939h@ds231387.mlab.com:31387/heroku_ktb0hw7m');
+
 
 // We have the express static module (http://expressjs.com/en/starter/static-files.html) do all
 // the work for us.
