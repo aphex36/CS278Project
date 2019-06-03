@@ -1,44 +1,87 @@
 <!doctype html>
-<html>
+<html ng-app="cs142App" ng-controller="MainController">
     <head>
-        <title>CS142 Project #6</title>
+        <title>{{main.title || "CS142 Class Project"}}</title>
+
+        <link href="./node_modules/angular-material/angular-material.css" rel="stylesheet" />
+        <link href='https://fonts.googleapis.com/css?family=Oleo+Script' rel='stylesheet' type='text/css' />
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" />
+        <script src="https://code.jquery.com/jquery-1.12.1.min.js"></script>
+        <script src="./node_modules/angular/angular.js" type="text/javascript" ></script>
+        <script src="./node_modules/angular-animate/angular-animate.js" type="text/javascript" ></script>
+        <script src="./node_modules/angular-aria/angular-aria.js" type="text/javascript" ></script>
+        <script src="./node_modules/angular-material/angular-material.js" type="text/javascript" ></script>
+        <script src="node_modules/angular-route/angular-route.js"></script>
+        <script src="mainController.js"></script>
+        <link rel="stylesheet" type="text/css" href="main.css" />
+
+        <script src="components/user-list/user-listController.js"></script>
+        <link rel="stylesheet" type="text/css" href="components/user-list/user-list.css" />
+        <script src="components/search/SearchController.js"></script>
+        <script src="components/user-detail/user-detailController.js"></script>
+        <link rel="stylesheet" type="text/css" href="components/user-detail/user-detail.css" />
+        <script src="components/search/SearchController.js"></script>
+        <link rel="stylesheet" type="text/css" href="components/map/map.css" />
+        <script src="components/map/mapController.js"></script>
+        <script src="components/restaurant/restaurantController.js"></script>
+
+        <script src="components/user-photos/user-photosController.js"></script>
+        <link rel="stylesheet" type="text/css" href="components/user-photos/user-photos.css" />
+        <script src="components/restaurant-detail/restaurant-detailController.js"></script>
+        <link rel="stylesheet" type="text/css" href="components/restaurant-detail/restaurant-detail.css" />
+        <script src="components/restaurant-detail/restaurant-detailController.js"></script>
+        <script src="components/user-start/user-frontPageController.js"></script>
+        <script src="components/login/login-Controller.js"></script>
+
+        <script src="components/feed/feedController.js"></script>
+        <script src="components/specific-photo/specific-userPhotoController.js"></script>
+        <script src="components/favorites/favoritesController.js"></script>
+        <script src="components/user-comments/user-commentsController.js"></script>
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+        <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+        <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+        <script src="modelData/format-time.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="
+        sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/multi-select/0.9.12/js/jquery.multi-select.js"></script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/multi-select/0.9.12/css/multi-select.css"></link>
+
     </head>
-    <body>
-        <h1>CS142 Project #6</h1>
-        <p>
-            If you can see this message it means your simple Node.js web server is working!
-        </p>
-        <p>
-            To test if your MongoDB server is up and running, the following link should return a
-            JSON encoded result:
-            <ul>
-                <li><a href="/test/info">/test/info</a> - Return information about the schema version</li>
-                <li><a href="/test/counts">/test/counts</a> - Return the collection counts</li>
-            </ul>
-        </p>
-        <p>
-            Your implementtion should make the URL <a href="/user/list">/user/list</a> return the users of the Photo App
-            encoded in JSON.
-        </p>
-        <p>
-            Your solution to project #6 should be served by this web server from the following files
-            that can be clicked on to test in your browser:
-        </p>
-        <ul>
-            <li>Photo Sharing App - <a href="food-app.html">food-app.html</a></li>
-        </ul>
-        <script type="text/javascript">
-            //<![CDATA[
-            // Angular doesn't work using the file protocol and it dies with an obscure error
-            // message.  Since the project's files are accessible using either the file or
-            // http protocols we warn the user if they are not using http.
-            if(window.location.protocol !== 'http:') {
-                var msg = "Project #6 files must be accessed with the http protocol (not from local files)."  +
-                                "\nUse the URL http://localhost:3000";
-                console.error(msg);
-                alert(msg);
-            }
-            //]]>
-        </script>
+
+    <body layout="column">
+
+        <md-toolbar style="background-color: rgb(210,0,0); height: 20px" layout = "row">
+          <div class='fullSpace'>
+            <div class='fullSpace'>
+              <h3 class='headerPadding' style="padding-top: 10px"><a style="color: white; text-decoration: none;" href="#">Food App</a></h3>
+              <span class='versionInfo'><br>
+                <button ng-if="userIsLoggedIn" ng-click="logoutUser()">Logout</button><br>
+              </span>
+            </div>
+            <br></br>
+          </div>
+
+        </md-toolbar>
+
+        <div class="container" flex layout="row">
+
+            <md-sidenav md-is-locked-open="true" class="md-whiteframe-z2">
+              <div ng-show="showCheckBox" class='searchPane'>
+                <input class='searchBar' placeholder="Search for restaurants" ng-model='searchTerms' />
+                <button ng-click='runSearch()'><i class='fa fa-search'></i></button><br></br>
+                <button style='width:68%' ng-click="loadOwnProfile()" class='searchBar'>My profile&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class='fa fa-user'></i></button>
+              </div>
+
+              <div id='listView' ng-include="'components/user-list/user-listTemplate.html'" ng-controller="UserListController"></div>
+            </md-sidenav>
+
+            <md-content flex id="content">
+                <div ng-view></div>
+            </md-content>
+
+        </div>
+
     </body>
 </html>
