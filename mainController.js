@@ -13,10 +13,6 @@ cs142App.config(['$routeProvider',
                 templateUrl: 'components/user-detail/user-detailTemplate.html',
                 controller: 'UserDetailController'
             }).
-            when('/restaurant/:restaurantId', {
-                templateUrl: 'components/restaurant-detail/restaurant-detailTemplate.html',
-                controller: 'RestaurantDetailController'
-            }).
             when('/photos/:userId', {
                 templateUrl: 'components/user-photos/user-photosTemplate.html',
                 controller: 'UserPhotosController'
