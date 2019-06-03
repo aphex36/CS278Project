@@ -33,9 +33,9 @@ cs142App.controller('restaurantController', ['$scope', '$routeParams',
         }
 
         var strengthUsed;
-        if ($("#reviewRating").val() === "Nope") {
+        if ($("#reviewRating").val() === "Nope (1/3 stars)") {
             strengthUsed = 1;
-        } else if ($("#reviewRating").val() === "Meh") {
+        } else if ($("#reviewRating").val() === "Meh (2/3 stars)") {
             strengthUsed = 2;
         } else {
             strengthUsed = 3;
