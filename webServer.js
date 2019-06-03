@@ -49,7 +49,7 @@ var fs = require('fs');
 const yelp = require('yelp-fusion');
 const client = yelp.client('FcGWwwL2vqkvQvJJSZoWulgmCZiMcLP0DWU9TUhhdCpq4YOI8rBjCBN6RP06UKbSlN4tLs_n_I9hgwLDtdUldQGhnPmzK2rjLMGjF1n0HdO642nZRVITVrp0AZHwXHYx');
 
-mongoose.connect('mongodb://localhost/cs142project6');
+mongoose.connect('mongodb://heroku_ktb0hw7m:cpkkrgio02l99880f70j9c939h@ds231387.mlab.com:31387/heroku_ktb0hw7m');
 
 // We have the express static module (http://expressjs.com/en/starter/static-files.html) do all
 // the work for us.
@@ -389,7 +389,7 @@ app.get('/recommendation/restaurant/:restaurantId', function(request, response) 
             }
 
             for (var j = 0; j < users_found.length; j++) {
-                userIdToName[users_found[j].id] = users_found[j].first_name + " " + users_found[j].last_name 
+                userIdToName[users_found[j].id] = users_found[j].first_name + " " + users_found[j].last_name
             }
 
             for (var j = 0; j < modified_recs.length; j++) {
