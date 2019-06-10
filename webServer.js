@@ -43,8 +43,8 @@ var async = require('async');
 // // Connection URL. This is where your mongodb server is running.
 
 //(Focus on This Variable)
-//var uri = 'mongodb://heroku_ktb0hw7m:cpkkrgio02l99880f70j9c939h@ds231387.mlab.com:31387/heroku_ktb0hw7m';
-var uri = 'mongodb://localhost:27017/cs142project6';
+var uri = 'mongodb://heroku_ktb0hw7m:cpkkrgio02l99880f70j9c939h@ds231387.mlab.com:31387/heroku_ktb0hw7m';
+//var uri = 'mongodb://localhost:27017/cs142project6';
 
 //(Focus on This Variable)
 
