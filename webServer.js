@@ -44,6 +44,8 @@ var async = require('async');
 
 //(Focus on This Variable)
 var uri = 'mongodb://heroku_ktb0hw7m:cpkkrgio02l99880f70j9c939h@ds231387.mlab.com:31387/heroku_ktb0hw7m';
+//var uri = 'mongodb://localhost:27017/cs142project6';
+
 //(Focus on This Variable)
 
 var options = {
@@ -92,8 +94,7 @@ var bodyParser = require('body-parser');
 var multer = require('multer');
 var fs = require('fs');
 const yelp = require('yelp-fusion');
-const client = yelp.client('FcGWwwL2vqkvQvJJSZoWulgmCZiMcLP0DWU9TUhhdCpq4YOI8rBjCBN6RP06UKbSlN4tLs_n_I9hgwLDtdUldQGhnPmzK2rjLMGjF1n0HdO642nZRVITVrp0AZHwXHYx');
-
+const client = yelp.client('5npPyPB-HOKcEL4nmkyl0LBW7kGuWZPgJbIXhu-NqXzb5kaaDeR0RBYrpO3txqzyiQjUIvpEn6ySAW2noSC5mL1yb7Zi-9jYKJ-HGtZg2vV-BliQS5VAe7n7yBD-XHYx')
 
 
 // We have the express static module (http://expressjs.com/en/starter/static-files.html) do all
@@ -280,6 +281,13 @@ app.post('/yelp/load', function(request, response){
       Restaurant.remove({}, function(err, restaurantsFound) {
 
         for (var j = 0; j < numResults; j += 50) {
+            function msleep(n) {
+                Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, n);
+            }
+            function sleep(n) {
+                msleep(n*1000);
+            }
+            sleep(5)
             client.search({
               latitude: 37.4275,
               longitude: -122.1697,
@@ -287,13 +295,18 @@ app.post('/yelp/load', function(request, response){
               limit: 50,
               offset: j
             }).then(currResponse => {
-              var restaurants = []
+                var restaurants = []
                 for (var i = 0; i < currResponse.jsonBody.businesses.length; i++) {
                    var currBusiness = currResponse.jsonBody.businesses[i]
+                   var allCategories = []
+                   if (currBusiness.categories) {
+                     for (var k = 0; k < currBusiness.categories.length; k++) {
+                         allCategories.push(currBusiness.categories[k].title.toLowerCase())
+                     }
+                   }
                    restaurants.push({"id": currBusiness.id, "address": currBusiness.location.display_address.join(", "), "name": currBusiness.name,
-                                     "latitude": currBusiness.coordinates.latitude, "longitude": currBusiness.coordinates.longitude});
+                                     "latitude": currBusiness.coordinates.latitude, "categories": allCategories, "longitude": currBusiness.coordinates.longitude});
                 }
-
                 Restaurant.create(restaurants, function(error, newData) {
                     if(error)
                     {
@@ -394,13 +407,28 @@ app.get('/recommendation/user/:id', function(request, response) {
 });
 
 app.get('/search', function(request, response) {
+
+    var globalMap = {}
     Restaurant.find({
-      $text: { $search: request.query.q},
+        $text: { $search: request.query.q}
     }, function(err, restaurants) {
       if (err) {
         response.status(400).send(JSON.stringify(err));
       }
-      response.end(JSON.stringify(restaurants));
+      for (var i = 0; i < restaurants.length; i++) {
+          globalMap[restaurants[i].id] = restaurants[i]
+      }
+      Restaurant.find({"categories": {$in: [request.query.q]}}, function(newErr, additionalRestaurants) {
+          for (var i = 0; i < additionalRestaurants.length; i++) {
+              globalMap[additionalRestaurants[i].id] = additionalRestaurants[i]
+          }
+
+          var unionedRestaurants = []
+          for (var key in globalMap) {
+              unionedRestaurants.push(globalMap[key])
+          }
+          response.end(JSON.stringify(unionedRestaurants));
+      })
     });
 });
 

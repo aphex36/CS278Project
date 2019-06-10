@@ -13,7 +13,8 @@ var restaurantSchema = new mongoose.Schema({
     address: String,
     name: String,
     latitude: Number,
-    longitude: Number
+    longitude: Number,
+    categories: [String]
 });
 
 restaurantSchema.index({ name: 'text', address: 'text'});
