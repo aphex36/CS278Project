@@ -16,6 +16,44 @@ cs142App.controller('UserDetailController', ['$scope', '$http', '$routeParams',
     {
     };
 
+    var selectedPhotoFile;
+
+    $scope.inputFileNameChanged = function (element) {
+        selectedPhotoFile = element.files[0];
+        var reader  = new FileReader();
+        reader.onloadend = function () {
+           $("#profilePic").attr("src", reader.result);
+
+        }
+        reader.readAsDataURL(selectedPhotoFile);
+    };
+
+    // Has the user selected a file?
+    $scope.inputFileNameSelected = function () {
+        return !!selectedPhotoFile;
+    };
+
+    // Upload the photo file selected by the user using a post request to the URL /photos/new
+    $scope.uploadPhoto = function () {
+        if (!$scope.inputFileNameSelected()) {
+            alert("No image has been selected to upload");
+            return;
+        }
+        // Create a DOM form and add the file to it under the name uploadedphoto
+        var domForm = new FormData();
+        domForm.append('uploadedphoto', selectedPhotoFile);
+
+        $http.post('/profile/picture', domForm, {
+            headers: {'Content-Type': undefined}
+        }).success(function(newPhoto){
+            alert("Photo successfully uploaded");
+                // The photo was successfully uploaded. XXX - Do whatever you want on success.
+        }).error(function(err){
+            // Couldn't upload the photo. XXX  - Do whatever you want on failure.
+            alert("Photo couldn't be uploaded");
+        });
+
+    };
     $scope.$parent.FetchModel("/current_user/", function(curr_response) 
     {
       $scope.userDetail.currUserId = curr_response.user_id

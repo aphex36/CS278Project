@@ -1,6 +1,11 @@
 <div class='profile' style='padding-left: 50px; padding-top: 50px'>
   <div style="max-width: 33%; display: inline-block">
-    <img style="width: 250px; height: 200px; border: 3px solid black" src="../images/anonymous.jpg"></img>
+    <img ng-if="!userDetail.user.profile_picture" id="profilePic" style="width: 250px; height: 200px; border: 3px solid black" src="../images/anonymous.jpg"></img>
+    <img ng-if="userDetail.user.profile_picture" id="profilePic" style="width: 250px; height: 200px; border: 3px solid black" ng-src="../images/{{userDetail.user.profile_picture}}"></img>
+    <div ng-if="userDetail.current_user">
+   		<input type="file" style="width:200px" accept="image/*"  onchange="angular.element(this).scope().inputFileNameChanged(this)"></input>
+    	<input type="submit" ng-click='uploadPhoto()'value="Upload"></input>
+    </div>
     <h3>{{userDetail.user.first_name}} {{userDetail.user.last_name}} 
     </h3>
     <button ng-click="toggleFollow()" ng-if="!userDetail.current_user">{{userDetail.follow_action}}</button>

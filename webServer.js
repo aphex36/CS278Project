@@ -93,6 +93,7 @@ var session = require('express-session');
 var bodyParser = require('body-parser');
 var multer = require('multer');
 var fs = require('fs');
+var multer = require('multer');
 const yelp = require('yelp-fusion');
 const client = yelp.client('5npPyPB-HOKcEL4nmkyl0LBW7kGuWZPgJbIXhu-NqXzb5kaaDeR0RBYrpO3txqzyiQjUIvpEn6ySAW2noSC5mL1yb7Zi-9jYKJ-HGtZg2vV-BliQS5VAe7n7yBD-XHYx')
 
@@ -754,6 +755,43 @@ app.get('/current_user', function(request,response)
   {
     response.end(JSON.stringify({'user' : request.session.userLoggedIn, 'user_id' : request.session.userLoginID}));
   }
+});
+
+app.post('/profile/picture', function(request,response)
+{
+  if(!request.session.userLoggedIn)
+  {
+    response.status(401).send("No authorization to make request");
+    return;
+  }
+
+  var processFormBody = multer({storage: multer.memoryStorage()}).single('uploadedphoto');
+  processFormBody(request, response, function (err) {
+        if (err || !request.file) {
+            response.status(400).send(JSON.stringify(err));
+            return;
+        }
+        // request.file has the following properties of interest
+        //      fieldname      - Should be 'uploadedphoto' since that is what we sent
+        //      originalname:  - The name of the file the user uploaded
+        //      mimetype:      - The mimetype of the image (e.g. 'image/jpeg',  'image/png')
+        //      buffer:        - A node Buffer containing the contents of the file
+        //      size:          - The size of the file in bytes
+
+        var timestamp = (new Date).getTime();
+        var filename = 'U' +  timestamp + request.file.originalname;
+
+        fs.writeFile("./images/" + filename, request.file.buffer, function (photoSaveError) {
+          if(photoSaveError)
+          {
+            response.status(400).send(JSON.stringify(photoSaveError));
+            return;
+          }
+          User.update({"id": request.session.userLoginID}, {$set: {"profile_picture": filename}}, function(newErr, updatedUser) {
+              response.end("[]");
+          });
+        })
+      })
 });
 
 //Logout a user if they were logged in and send a 400 request if not

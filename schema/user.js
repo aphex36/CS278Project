@@ -16,7 +16,8 @@ var userSchema = new mongoose.Schema({
     password: String,
     specialties: [String],
     followers: [String],
-    following: [String]
+    following: [String],
+    profile_picture: String
 });
 
 
