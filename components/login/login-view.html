@@ -1,4 +1,4 @@
-<h2 class='heading'>Login To Food App!</h2>
+<h2 class='heading'>Existing Users: Login to Food App!</h2>
 <form name="login_form" class='formatForm' ng-submit="submitLogin(login_form)" class="css-form">
    <label>Username: </label>
    <input class='loginTextBox' type="text" name="userName" ng-model="user_name" required/>
@@ -11,7 +11,8 @@
    <input type="submit" value="Submit"/>
 </form>
 <br></br>
-<h2 class='heading'>Register to Food App!</h2>
+<h2 class='heading'>New Users: Register for Food App!</h2>
+<h3 class="subheading">Food App connects foodies around similar interests. Find others in your neighborhood with the same tastes as you, and give and receive personalized recommendations!</h3>
 <form name="register_form" class='formatForm' ng-submit="submitRegister(register_form)" class="css-form">
    <label class='errorMessageColor'>{{errorMessage}}</label><br>
    <label>Username:</label>
@@ -24,7 +25,7 @@
    <input class='loginTextBox' type="text" ng-model="firstNameInput" required/><br></br>
    <label>Last name: </label>
    <input class='loginTextBox' type="text" ng-model="lastNameInput" required/><br></br>
-   <label>Specialties: </label>
+   <label>My favorite foods: </label>
 
     <label class="checkbox-inline">
       <input type="checkbox" value="Thai">Thai
@@ -57,7 +58,7 @@
       <input type="checkbox" value="Japanese">Japanese
     </label>
     <label class="checkbox-inline">
-      <input type="checkbox" value="Deserts">Deserts
+      <input type="checkbox" value="Deserts">Desserts
     </label>
    <br></br>
    <input type="submit" value="Register"/>
