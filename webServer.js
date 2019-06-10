@@ -397,11 +397,16 @@ app.get('/recommendation/user/:id', function(request, response) {
             }
 
             var modified_recs = JSON.parse(JSON.stringify(recs_found))
+            var newest_recs = []
             for (var j = 0; j < modified_recs.length; j++) {
+                if (!(modified_recs[j].restaurant in restaurantIdToObj)) {
+                    continue
+                }
                 modified_recs[j].name = restaurantIdToObj[modified_recs[j].restaurant].name
                 modified_recs[j].address = restaurantIdToObj[modified_recs[j].restaurant].address
+                newest_recs.push(modified_recs[j])
             }
-            response.end(JSON.stringify(modified_recs));
+            response.end(JSON.stringify(newest_recs));
         })
       }
     });
