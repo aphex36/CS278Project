@@ -23,7 +23,7 @@
     "express-session": "^1.13.0",
     "fs": "0.0.2",
     "jshint": "^2.9.1-rc2",
-    "mongoose": "5.0.0",
+    "mongoose": "5.7.5",
     "multer": "^1.1.0",
     "yelp-fusion": "^3.0.0"
   }
